@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DocuForge AI – Sign in</title>
+  <!-- Tailwind CSS + Font Awesome + Alpine.js -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <script src="js/app.js"></script>
+  <style>
+    /* Custom gradient overlay for image */
+    .hero-gradient {
+      background: linear-gradient(135deg, rgba(45,27,19,0.85) 0%, rgba(212,163,115,0.75) 100%);
+    }
+    /* Smooth transition for the card */
+    .card-transition {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .card-transition:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 25px -12px rgba(0,0,0,0.3);
+    }
+  </style>
+</head>
+<body class="bg-gray-900 font-sans antialiased" x-data="auth()" x-init="init">
+
+  <div class="flex min-h-screen">
+    <!-- Left side: Image + overlay + welcome text -->
+    <div class="hidden lg:flex lg:w-1/2 relative overflow-hidden">
+      <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80" 
+           alt="Workspace" 
+           class="absolute inset-0 w-full h-full object-cover">
+      <div class="hero-gradient absolute inset-0"></div>
+      <div class="relative z-10 flex flex-col justify-center px-12 text-white">
+        <div class="mb-6">
+          <i class="fas fa-robot text-6xl text-[#d4a373]"></i>
+        </div>
+        <h1 class="text-4xl font-bold mb-4">DocuForge AI</h1>
+        <p class="text-lg leading-relaxed opacity-90">
+          Transform vague ideas into professional software specifications.<br>
+          AI‑powered requirements engineering – in minutes, not weeks.
+        </p>
+        <div class="mt-8 flex gap-4 text-sm opacity-80">
+          <div><i class="fas fa-check-circle text-[#d4a373] mr-2"></i> Conflict detection</div>
+          <div><i class="fas fa-check-circle text-[#d4a373] mr-2"></i> UML diagrams</div>
+          <div><i class="fas fa-check-circle text-[#d4a373] mr-2"></i> PDF/DOCX export</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right side: Login/Register card -->
+    <div class="w-full lg:w-1/2 flex items-center justify-center p-6 bg-gradient-to-br from-gray-900 to-gray-800">
+      <div class="w-full max-w-md card-transition">
+        <!-- Logo for mobile -->
+        <div class="text-center lg:hidden mb-8">
+          <i class="fas fa-robot text-4xl text-[#d4a373]"></i>
+          <h2 class="text-2xl font-bold text-white mt-2">DocuForge AI</h2>
+        </div>
+
+        <div class="bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-2xl p-8 border border-gray-700">
+          <div class="text-center mb-8">
+            <h3 class="text-2xl font-semibold text-white">Welcome back</h3>
+            <p class="text-gray-400 mt-1">Sign in to your account or create one</p>
+          </div>
+
+          <!-- Tabs -->
+          <div class="flex gap-2 p-1 bg-gray-700/50 rounded-xl mb-8">
+            <button @click="activeTab='login'" 
+                    :class="activeTab === 'login' ? 'bg-[#d4a373] text-white shadow-md' : 'text-gray-400 hover:text-white'"
+                    class="flex-1 py-2 rounded-lg font-medium transition-all duration-200">
+              Sign in
+            </button>
+            <button @click="activeTab='register'" 
+                    :class="activeTab === 'register' ? 'bg-[#d4a373] text-white shadow-md' : 'text-gray-400 hover:text-white'"
+                    class="flex-1 py-2 rounded-lg font-medium transition-all duration-200">
+              Create account
+            </button>
+          </div>
+
+          <!-- Login Form -->
+          <div x-show="activeTab === 'login'" x-transition.opacity>
+            <form @submit.prevent="doLogin" class="space-y-5">
+              <div>
+                <label class="block text-sm font-medium text-gray-300 mb-1">Email address</label>
+                <div class="relative">
+                  <i class="fas fa-envelope absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                  <input type="email" x-model="loginEmail" 
+                         class="w-full pl-10 pr-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#d4a373] focus:border-transparent text-white" 
+                         placeholder="you@example.com" required>
+                </div>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-300 mb-1">Password</label>
+                <div class="relative">
+                  <i class="fas fa-lock absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                  <input type="password" x-model="loginPassword" 
+                         class="w-full pl-10 pr-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#d4a373] focus:border-transparent text-white" 
+                         placeholder="••••••••" required>
+                </div>
+              </div>
+              <button type="submit" 
+                      class="w-full bg-[#d4a373] hover:bg-[#c2925e] text-white font-semibold py-2.5 rounded-lg transition duration-200 flex items-center justify-center gap-2">
+                <i class="fas fa-arrow-right-to-bracket"></i> Sign In
+              </button>
+              <p x-show="loginError" x-text="loginError" class="text-red-400 text-sm mt-2 text-center"></p>
+            </form>
+          </div>
+
+          <!-- Register Form -->
+          <div x-show="activeTab === 'register'" x-transition.opacity style="display: none;">
+            <form @submit.prevent="doRegister" class="space-y-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-300 mb-1">Full name</label>
+                <div class="relative">
+                  <i class="fas fa-user absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                  <input type="text" x-model="registerName" 
+                         class="w-full pl-10 pr-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#d4a373]" 
+                         placeholder="John Doe" required>
+                </div>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-300 mb-1">Email</label>
+                <div class="relative">
+                  <i class="fas fa-envelope absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                  <input type="email" x-model="registerEmail" class="w-full pl-10 pr-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#d4a373]" 
+                         placeholder="you@example.com" required>
+                </div>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-300 mb-1">Password</label>
+                <div class="relative">
+                  <i class="fas fa-lock absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                  <input type="password" x-model="registerPassword" class="w-full pl-10 pr-3 py-2 bg-gray-700 border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#d4a373]" 
+                         placeholder="Create a password" required>
+                </div>
+              </div>
+              <button type="submit" 
+                      class="w-full bg-[#d4a373] hover:bg-[#c2925e] text-white font-semibold py-2.5 rounded-lg transition duration-200 flex items-center justify-center gap-2">
+                <i class="fas fa-user-plus"></i> Create Account
+              </button>
+              <p x-show="registerError" x-text="registerError" class="text-red-400 text-sm mt-2 text-center"></p>
+              <p x-show="registerSuccess" x-text="registerSuccess" class="text-green-400 text-sm mt-2 text-center"></p>
+            </form>
+          </div>
+
+          <div class="mt-6 text-center text-xs text-gray-500">
+            By continuing, you agree to our Terms and Privacy Policy.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function auth() {
+      return {
+        activeTab: 'login',
+        loginEmail: '',
+        loginPassword: '',
+        loginError: '',
+        registerName: '',
+        registerEmail: '',
+        registerPassword: '',
+        registerError: '',
+        registerSuccess: '',
+        init() {
+          if (localStorage.getItem('access_token')) {
+            window.location.href = 'dashboard.html';
+          }
+        },
+        async doLogin() {
+          this.loginError = '';
+          try {
+            await window.api.login(this.loginEmail, this.loginPassword);
+            window.location.href = 'dashboard.html';
+          } catch (err) {
+            this.loginError = 'Invalid email or password';
+          }
+        },
+        async doRegister() {
+          this.registerError = '';
+          this.registerSuccess = '';
+          try {
+            await window.api.register({ email: this.registerEmail, password: this.registerPassword, full_name: this.registerName });
+            this.registerSuccess = 'Account created! Please login.';
+            setTimeout(() => { this.activeTab = 'login'; }, 1800);
+          } catch (err) {
+            this.registerError = err.message || 'Registration failed';
+          }
+        }
+      }
+    }
+  </script>
+</body>
+</html>
+

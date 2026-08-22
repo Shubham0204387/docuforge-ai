@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>1. Project Overview</h2>
+<p><strong>Project Name:</strong> {{ project_name }}</p>
+<p><strong>Project ID:</strong> {{ project_id }}</p>
+<p><strong>Objective:</strong> {{ objective }}</p>
+
+<h2>2. Scope of Work</h2>
+<p>The scope includes development of a {{ domain }} system with the following high‑level features:</p>
+<ul>
+{% for feature in features %}
+    <li>{{ feature }}</li>
+{% endfor %}
+</ul>
+
+<h2>3. Timeline & Milestones</h2>
+<table>
+    <thead><tr><th>Milestone</th><th>Estimated Completion</th><th>Deliverables</th></tr></thead>
+    <tbody>
+    {% for milestone in milestones %}
+    <tr><td>{{ milestone.name }}</td><td>{{ milestone.week }} weeks</td><td>{{ milestone.deliverables }}</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+<p><strong>Total estimated duration:</strong> {{ total_weeks }} weeks.</p>
+
+<h2>4. Budget Estimate</h2>
+<p><strong>Total estimated effort:</strong> {{ total_effort_hours }} hours.</p>
+<p><strong>Estimated cost:</strong> ${{ budget_estimate }} (based on ${{ hourly_rate }}/hour).</p>
+
+<h2>5. Acceptance Criteria</h2>
+<ul>
+    <li>All Must‑have requirements implemented and tested.</li>
+    <li>Passing all acceptance tests defined in test plan.</li>
+    <li>Documentation delivered as per agreement.</li>
+</ul>
+{% endblock %}

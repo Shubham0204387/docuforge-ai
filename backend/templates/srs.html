@@ -1,0 +1,443 @@
+{% extends "base.html" %}
+{% set subtitle = "Software Requirements Specification (IEEE 830)" %}
+{% block content %}
+
+<!-- ══════════════════════════════════════════════
+     TABLE OF CONTENTS
+══════════════════════════════════════════════ -->
+<div class="toc">
+    <h2>Table of Contents</h2>
+    <ol>
+        <li><a href="#sec1">1. Introduction</a>
+            <ol>
+                <li><a href="#sec1-1">1.1 Purpose</a></li>
+                <li><a href="#sec1-2">1.2 Scope</a></li>
+                <li><a href="#sec1-3">1.3 Definitions & Acronyms</a></li>
+                <li><a href="#sec1-4">1.4 Overview</a></li>
+            </ol>
+        </li>
+        <li><a href="#sec2">2. Overall Description</a>
+            <ol>
+                <li><a href="#sec2-1">2.1 Product Perspective</a></li>
+                <li><a href="#sec2-2">2.2 Product Functions</a></li>
+                <li><a href="#sec2-3">2.3 User Classes & Characteristics</a></li>
+                <li><a href="#sec2-4">2.4 Operating Environment</a></li>
+                <li><a href="#sec2-5">2.5 Design & Implementation Constraints</a></li>
+                <li><a href="#sec2-6">2.6 Assumptions & Dependencies</a></li>
+            </ol>
+        </li>
+        <li><a href="#sec3">3. Specific Requirements</a>
+            <ol>
+                <li><a href="#sec3-1">3.1 Functional Requirements</a></li>
+                <li><a href="#sec3-2">3.2 Non-Functional Requirements</a></li>
+                <li><a href="#sec3-3">3.3 Constraints</a></li>
+            </ol>
+        </li>
+        <li><a href="#sec4">4. External Interface Requirements</a></li>
+        <li><a href="#sec5">5. Quality Attributes</a></li>
+        <li><a href="#sec6">6. Conflict Analysis</a></li>
+        <li><a href="#sec7">7. Impact Analysis</a></li>
+        <li><a href="#sec8">8. Appendices</a></li>
+    </ol>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     REVISION HISTORY
+══════════════════════════════════════════════ -->
+<h2>Revision History</h2>
+<table class="revision-table">
+    <thead><tr><th>Version</th><th>Date</th><th>Author</th><th>Description</th></tr></thead>
+    <tbody>
+        <tr><td>1.0</td><td>{{ date }}</td><td>DocuForge AI</td><td>Initial draft — auto-generated from project requirements</td></tr>
+    </tbody>
+</table>
+
+<!-- ══════════════════════════════════════════════
+     SECTION 1 — INTRODUCTION
+══════════════════════════════════════════════ -->
+<h2 id="sec1">1. Introduction</h2>
+
+<h3 id="sec1-1">1.1 Purpose</h3>
+<div class="section-intro">
+    This Software Requirements Specification (SRS) document defines the complete set of functional and non-functional requirements for the <strong>{{ project_name }}</strong> system. It is prepared in accordance with the <strong>IEEE 830-1998</strong> standard and is intended for developers, quality assurance teams, project managers, and all relevant stakeholders.
+</div>
+<p>This document serves as the foundation for system design, implementation, and acceptance testing. All requirements listed herein must be fulfilled for the system to be considered complete.</p>
+
+<h3 id="sec1-2">1.2 Scope</h3>
+<p>The <strong>{{ project_name }}</strong> system is a <strong>{{ domain | default("general") | title }}</strong>-domain platform designed to {{ scope_summary }}.</p>
+<p>The system is intended to:</p>
+<ul>
+    <li>Provide {{ actors | join(", ") if actors else "end users" }} with a reliable, scalable, and secure platform</li>
+    <li>Integrate with external systems including: {{ integrations | join(", ") if integrations else "Payment Gateway, Notification Service, and Third-party APIs" }}</li>
+    <li>Achieve high availability (≥ 99.9% uptime SLA) and performance standards</li>
+    <li>Comply with applicable data protection and security regulations</li>
+</ul>
+
+<h3 id="sec1-3">1.3 Definitions, Acronyms & Abbreviations</h3>
+<table>
+    <thead><tr><th>Term</th><th>Definition</th></tr></thead>
+    <tbody>
+        <tr><td><code>FR</code></td><td>Functional Requirement — describes a specific system capability or behaviour</td></tr>
+        <tr><td><code>NFR</code></td><td>Non-Functional Requirement — describes quality attributes (performance, security, etc.)</td></tr>
+        <tr><td><code>CON</code></td><td>Constraint — a restriction imposed on the design or implementation</td></tr>
+        <tr><td><code>RQI</code></td><td>Requirement Quality Index — a 0–100 score measuring requirement clarity, completeness, and testability</td></tr>
+        <tr><td><code>MoSCoW</code></td><td>Prioritization method: Must Have / Should Have / Could Have / Won't Have</td></tr>
+        <tr><td><code>API</code></td><td>Application Programming Interface</td></tr>
+        <tr><td><code>SLA</code></td><td>Service Level Agreement</td></tr>
+        <tr><td><code>GDPR</code></td><td>General Data Protection Regulation</td></tr>
+        <tr><td><code>UI/UX</code></td><td>User Interface / User Experience</td></tr>
+    </tbody>
+</table>
+
+<h3 id="sec1-4">1.4 Overview</h3>
+<p>The remainder of this SRS is organized as follows: Section 2 provides an overall system description including product perspective, user classes, and operating environment. Section 3 presents the detailed functional and non-functional requirements. Sections 4–5 cover external interfaces and quality attributes. Sections 6–7 document conflict and impact analyses generated by DocuForge AI.</p>
+
+<!-- ══════════════════════════════════════════════
+     SECTION 2 — OVERALL DESCRIPTION
+══════════════════════════════════════════════ -->
+<h2 id="sec2">2. Overall Description</h2>
+
+<h3 id="sec2-1">2.1 Product Perspective</h3>
+<p>The <strong>{{ project_name }}</strong> system operates within the <strong>{{ domain | default("general") | title }}</strong> domain. It is a standalone platform that interfaces with the following external systems and services:</p>
+<ul>
+    {% for integration in (integrations if integrations else ["Payment Gateway", "Email/SMS Notification Service", "External Authentication Provider", "Cloud Storage Service"]) %}
+    <li><strong>{{ integration }}</strong> — integrated via REST API for {{ integration.lower() }} operations</li>
+    {% endfor %}
+</ul>
+
+<h3 id="sec2-2">2.2 Product Functions</h3>
+<p>At a high level, the system provides the following major functional areas:</p>
+<ul>
+    {% for req in functional_requirements[:8] %}
+    <li>{{ req.text[:120] }}{% if req.text|length > 120 %}…{% endif %}</li>
+    {% else %}
+    <li>Core business logic processing and management</li>
+    <li>User authentication and authorization</li>
+    <li>Data storage and retrieval</li>
+    <li>Notification and communication services</li>
+    {% endfor %}
+</ul>
+
+<h3 id="sec2-3">2.3 User Classes & Characteristics</h3>
+<table>
+    <thead><tr><th>User Class</th><th>Description</th><th>Frequency of Use</th><th>Technical Expertise</th></tr></thead>
+    <tbody>
+        {% for actor in (actors if actors else ["End User", "Administrator"]) %}
+        <tr>
+            <td><strong>{{ actor }}</strong></td>
+            <td>{{ actor }}-level access to system features</td>
+            <td>Daily</td>
+            <td>{% if actor.lower() in ['admin', 'administrator', 'developer'] %}High{% else %}Low–Medium{% endif %}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<h3 id="sec2-4">2.4 Operating Environment</h3>
+<table>
+    <thead><tr><th>Component</th><th>Specification</th></tr></thead>
+    <tbody>
+        <tr><td>Web Browsers</td><td>Chrome 110+, Firefox 110+, Safari 16+, Edge 110+</td></tr>
+        <tr><td>Mobile Platforms</td><td>iOS 15+, Android 11+</td></tr>
+        <tr><td>Backend Runtime</td><td>Python 3.10+ / Node.js 18+ (based on implementation choice)</td></tr>
+        <tr><td>Database</td><td>PostgreSQL 14+ (primary), Redis 7+ (caching)</td></tr>
+        <tr><td>Deployment</td><td>Cloud-hosted (AWS / GCP / Azure) with auto-scaling</td></tr>
+        <tr><td>Network</td><td>HTTPS/TLS 1.3 enforced on all endpoints</td></tr>
+    </tbody>
+</table>
+
+<h3 id="sec2-5">2.5 Design & Implementation Constraints</h3>
+<ul>
+    <li>All APIs must follow <strong>RESTful design principles</strong> with OpenAPI 3.0 documentation</li>
+    <li>The system must support a minimum of <strong>10,000 concurrent users</strong></li>
+    <li>All sensitive data must be encrypted at rest (AES-256) and in transit (TLS 1.3)</li>
+    <li>The system must comply with <strong>GDPR</strong> data protection requirements</li>
+    <li>Response time for critical operations must not exceed <strong>2 seconds</strong> under normal load</li>
+    <li>The system must achieve <strong>99.9% uptime SLA</strong> measured monthly</li>
+</ul>
+
+<h3 id="sec2-6">2.6 Assumptions & Dependencies</h3>
+<ul>
+    <li>External payment gateway availability is assumed (not under system control)</li>
+    <li>Users have stable internet connectivity (≥ 1 Mbps)</li>
+    <li>Third-party APIs maintain their existing interface contracts</li>
+    <li>The development team has access to required cloud infrastructure</li>
+</ul>
+
+<!-- ══════════════════════════════════════════════
+     SECTION 3 — SPECIFIC REQUIREMENTS
+══════════════════════════════════════════════ -->
+<h2 id="sec3">3. Specific Requirements</h2>
+
+<h3 id="sec3-1">3.1 Functional Requirements</h3>
+<div class="callout callout-info">
+    <strong>Total Functional Requirements:</strong> {{ functional_requirements | length }}
+</div>
+<table>
+    <caption>Table 3.1 — Functional Requirements</caption>
+    <thead>
+        <tr>
+            <th style="width:90px">ID</th>
+            <th>Requirement Statement</th>
+            <th style="width:70px">Priority</th>
+            <th style="width:100px">Category</th>
+            <th style="width:55px">RQI</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for req in functional_requirements %}
+    <tr>
+        <td><code>{{ req.requirement_id or req.id }}</code></td>
+        <td>{{ req.text }}</td>
+        <td>
+            {% set p = (req.priority.value if req.priority and req.priority.value else req.priority) | default("SHOULD") | upper %}
+            <span class="badge badge-{{ p.lower() }}">{{ p }}</span>
+        </td>
+        <td>{{ req.category or "General" }}</td>
+        <td>{{ req.quality_score | default("—") }}</td>
+    </tr>
+    {% else %}
+    <tr><td colspan="5" style="text-align:center;color:#999">No functional requirements recorded.</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<h3 id="sec3-2">3.2 Non-Functional Requirements</h3>
+<table>
+    <caption>Table 3.2 — Non-Functional Requirements</caption>
+    <thead>
+        <tr>
+            <th style="width:90px">ID</th>
+            <th>Requirement Statement</th>
+            <th style="width:100px">Type</th>
+            <th style="width:70px">Priority</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for req in nonfunctional_requirements %}
+    <tr>
+        <td><code>{{ req.requirement_id or req.id }}</code></td>
+        <td>{{ req.text }}</td>
+        <td>{{ (req.type.value if req.type and req.type.value else req.type) | default("NFR") | replace("_", " ") | title }}</td>
+        <td>
+            {% set p = (req.priority.value if req.priority and req.priority.value else req.priority) | default("SHOULD") | upper %}
+            <span class="badge badge-{{ p.lower() }}">{{ p }}</span>
+        </td>
+    </tr>
+    {% else %}
+    <tr>
+        <td><code>NFR-001</code></td><td>The system shall respond to 95% of API requests within 1 second under normal load (≤ 500 concurrent users).</td><td>Performance</td><td><span class="badge badge-must">MUST</span></td>
+    </tr>
+    <tr>
+        <td><code>NFR-002</code></td><td>All user passwords must be hashed using bcrypt with a work factor of ≥ 12.</td><td>Security</td><td><span class="badge badge-must">MUST</span></td>
+    </tr>
+    <tr>
+        <td><code>NFR-003</code></td><td>The system must achieve 99.9% monthly uptime, excluding planned maintenance windows.</td><td>Availability</td><td><span class="badge badge-must">MUST</span></td>
+    </tr>
+    <tr>
+        <td><code>NFR-004</code></td><td>The application must be fully responsive and accessible on mobile devices (iOS 15+, Android 11+).</td><td>Usability</td><td><span class="badge badge-should">SHOULD</span></td>
+    </tr>
+    <tr>
+        <td><code>NFR-005</code></td><td>The system must support horizontal scaling to handle a 10× increase in traffic within 5 minutes.</td><td>Scalability</td><td><span class="badge badge-should">SHOULD</span></td>
+    </tr>
+    <tr>
+        <td><code>NFR-006</code></td><td>All data at rest must be encrypted using AES-256, and all data in transit must use TLS 1.3.</td><td>Security</td><td><span class="badge badge-must">MUST</span></td>
+    </tr>
+    <tr>
+        <td><code>NFR-007</code></td><td>The system must comply with GDPR requirements including right to erasure and data portability.</td><td>Compliance</td><td><span class="badge badge-must">MUST</span></td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<h3 id="sec3-3">3.3 Constraints</h3>
+<table>
+    <thead><tr><th>Constraint ID</th><th>Description</th><th>Type</th></tr></thead>
+    <tbody>
+        <tr><td><code>CON-001</code></td><td>The system must be deployable in a containerized environment (Docker/Kubernetes)</td><td>Technical</td></tr>
+        <tr><td><code>CON-002</code></td><td>Budget constraints limit the use of paid third-party services to approved vendors</td><td>Business</td></tr>
+        <tr><td><code>CON-003</code></td><td>The development must use approved open-source licenses (MIT, Apache 2.0)</td><td>Legal</td></tr>
+        <tr><td><code>CON-004</code></td><td>The system must maintain backward compatibility with the existing API for 6 months post-launch</td><td>Technical</td></tr>
+    </tbody>
+</table>
+
+<!-- ══════════════════════════════════════════════
+     SECTION 4 — EXTERNAL INTERFACES
+══════════════════════════════════════════════ -->
+<h2 id="sec4">4. External Interface Requirements</h2>
+
+<h3>4.1 User Interfaces</h3>
+<ul>
+    <li>Responsive web application accessible via modern browsers (Chrome, Firefox, Safari, Edge)</li>
+    <li>Native mobile applications for iOS and Android platforms</li>
+    <li>Accessibility compliance with WCAG 2.1 Level AA</li>
+    <li>Maximum page load time of 3 seconds on a 4G connection</li>
+</ul>
+
+<h3>4.2 Software Interfaces</h3>
+<table>
+    <thead><tr><th>Interface</th><th>Protocol</th><th>Purpose</th><th>Authentication</th></tr></thead>
+    <tbody>
+        {% for integration in (integrations if integrations else ["Payment Gateway", "Email Service", "Push Notification"]) %}
+        <tr>
+            <td><strong>{{ integration }}</strong></td>
+            <td>REST / HTTPS</td>
+            <td>{{ integration }} integration</td>
+            <td>API Key / OAuth 2.0</td>
+        </tr>
+        {% endfor %}
+        <tr><td><strong>Database</strong></td><td>TCP/IP</td><td>Persistent data storage</td><td>Password + TLS</td></tr>
+        <tr><td><strong>Cache Layer</strong></td><td>TCP/IP</td><td>Session & query caching</td><td>Password auth</td></tr>
+    </tbody>
+</table>
+
+<h3>4.3 Communication Interfaces</h3>
+<ul>
+    <li>All REST APIs must respond with JSON (Content-Type: application/json)</li>
+    <li>WebSocket connections must be used for real-time features (tracking, notifications)</li>
+    <li>All communications must use HTTPS with valid TLS 1.3 certificates</li>
+</ul>
+
+<!-- ══════════════════════════════════════════════
+     SECTION 5 — QUALITY ATTRIBUTES
+══════════════════════════════════════════════ -->
+<h2 id="sec5">5. Quality Attributes</h2>
+
+<div class="metric-grid">
+    <div class="metric-card">
+        <div class="metric-value">{{ avg_rqi | default(0) }}</div>
+        <div class="metric-label">Average RQI Score</div>
+        <div class="metric-sub">/ 100</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-value">{{ functional_requirements | length }}</div>
+        <div class="metric-label">Functional Requirements</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-value">{{ nonfunctional_requirements | length }}</div>
+        <div class="metric-label">Non-Functional Requirements</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-value">{{ rating | default("Fair") }}</div>
+        <div class="metric-label">Quality Rating</div>
+    </div>
+</div>
+
+<table>
+    <thead><tr><th>Quality Attribute</th><th>Metric</th><th>Target</th><th>Measurement Method</th></tr></thead>
+    <tbody>
+        <tr><td>Performance</td><td>Response Time (p95)</td><td>&lt; 1 second</td><td>Load testing (k6 / JMeter)</td></tr>
+        <tr><td>Reliability</td><td>Monthly Uptime</td><td>≥ 99.9%</td><td>Uptime monitoring (Pingdom)</td></tr>
+        <tr><td>Security</td><td>OWASP Top 10 Compliance</td><td>Zero critical vulnerabilities</td><td>Penetration testing</td></tr>
+        <tr><td>Scalability</td><td>Concurrent Users</td><td>10,000+</td><td>Stress testing</td></tr>
+        <tr><td>Maintainability</td><td>Code Coverage</td><td>≥ 80%</td><td>Unit + integration tests</td></tr>
+        <tr><td>Usability</td><td>Task Completion Rate</td><td>≥ 90%</td><td>User testing sessions</td></tr>
+    </tbody>
+</table>
+
+<!-- ══════════════════════════════════════════════
+     SECTION 6 — CONFLICT ANALYSIS
+══════════════════════════════════════════════ -->
+<h2 id="sec6">6. Conflict Analysis</h2>
+
+{% if conflicts %}
+<div class="callout callout-warning">
+    <strong>{{ conflicts | length }} conflict(s) detected</strong> in this requirement set. Resolution is required before implementation.
+</div>
+<table>
+    <thead><tr><th>Conflict ID</th><th>Type</th><th>Description</th><th>Severity</th><th>Resolution Status</th></tr></thead>
+    <tbody>
+    {% for conflict in conflicts %}
+    <tr>
+        <td><code>CFT-{{ "%03d" | format(loop.index) }}</code></td>
+        <td>{{ conflict.conflict_type or conflict.type }}</td>
+        <td>{{ conflict.description }}</td>
+        <td><span class="badge badge-{{ (conflict.severity.value if conflict.severity and conflict.severity.value else conflict.severity) | default("medium") | lower }}">{{ (conflict.severity.value if conflict.severity and conflict.severity.value else conflict.severity) | default("MEDIUM") | upper }}</span></td>
+        <td>{% if conflict.resolved %}<span class="badge badge-pass">Resolved</span>{% else %}<span class="badge badge-pending">Pending</span>{% endif %}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<div class="callout callout-success">
+    <strong>✅ No requirement conflicts detected.</strong> All requirements are consistent and non-contradictory.
+</div>
+{% endif %}
+
+<!-- ══════════════════════════════════════════════
+     SECTION 7 — IMPACT ANALYSIS
+══════════════════════════════════════════════ -->
+<h2 id="sec7">7. Impact Analysis</h2>
+
+<div class="metric-grid">
+    <div class="metric-card">
+        <div class="metric-value">{{ total_effort_hours | default(0) }}</div>
+        <div class="metric-label">Estimated Effort</div>
+        <div class="metric-sub">hours</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-value">{{ total_person_days | default(0) }}</div>
+        <div class="metric-label">Person-Days</div>
+        <div class="metric-sub">total</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-value">{{ max_complexity | default(0) }}</div>
+        <div class="metric-label">Max Complexity</div>
+        <div class="metric-sub">/ 10</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-value">{{ high_risk_count | default(0) }}</div>
+        <div class="metric-label">High-Risk Requirements</div>
+    </div>
+</div>
+
+<p>Based on automated analysis by DocuForge AI's impact assessment engine:</p>
+<ul>
+    <li>The estimated total development effort is <strong>{{ total_effort_hours | default(0) }} hours ({{ total_person_days | default(0) }} person-days)</strong></li>
+    <li>Maximum requirement complexity is <strong>{{ max_complexity | default(0) }}/10</strong></li>
+    <li><strong>{{ high_risk_count | default(0) }}</strong> requirement(s) are classified as high-risk and require additional review</li>
+    <li>Recommended team size: 3–6 developers for optimal delivery timeline</li>
+</ul>
+
+<!-- ══════════════════════════════════════════════
+     SECTION 8 — APPENDICES
+══════════════════════════════════════════════ -->
+<h2 id="sec8">8. Appendices</h2>
+
+<h3>8.1 Requirement Traceability Matrix</h3>
+<table>
+    <thead><tr><th>Requirement ID</th><th>Description (Excerpt)</th><th>Source</th><th>Test Case ID</th></tr></thead>
+    <tbody>
+    {% for req in (functional_requirements[:10] if functional_requirements else []) %}
+    <tr>
+        <td><code>{{ req.requirement_id or req.id }}</code></td>
+        <td>{{ req.text[:80] }}…</td>
+        <td>{{ req.source | default("User Input") }}</td>
+        <td><code>TC-{{ "%03d" | format(loop.index) }}</code></td>
+    </tr>
+    {% else %}
+    <tr><td colspan="4" style="text-align:center;color:#999">Traceability matrix will be completed during test planning phase.</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<h3>8.2 Document Approval</h3>
+<div class="signature-grid">
+    <div class="signature-box">
+        <div class="signature-name">Project Manager</div>
+        <div class="signature-line"></div>
+        <div class="signature-label">Signature & Date</div>
+    </div>
+    <div class="signature-box">
+        <div class="signature-name">Lead Developer</div>
+        <div class="signature-line"></div>
+        <div class="signature-label">Signature & Date</div>
+    </div>
+    <div class="signature-box">
+        <div class="signature-name">QA Manager</div>
+        <div class="signature-line"></div>
+        <div class="signature-label">Signature & Date</div>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,10 @@
+{
+  "name": "GDPR",
+  "requirements": [
+    "The system shall obtain explicit consent for data collection",
+    "The system shall provide data portability (export user data)",
+    "The system shall support the right to be forgotten (account deletion)",
+    "The system shall notify users of data breaches within 72 hours",
+    "The system shall maintain a record of processing activities"
+  ]
+}

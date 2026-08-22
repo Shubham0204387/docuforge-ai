@@ -1,0 +1,368 @@
+{% extends "base.html" %}
+{% set subtitle = "Production Deployment Guide" %}
+{% block content %}
+
+<div class="toc">
+    <h2>Table of Contents</h2>
+    <ol>
+        <li><a href="#dg1">1. Overview</a></li>
+        <li><a href="#dg2">2. Prerequisites</a></li>
+        <li><a href="#dg3">3. Architecture Overview</a></li>
+        <li><a href="#dg4">4. Environment Configuration</a></li>
+        <li><a href="#dg5">5. Database Setup & Migrations</a></li>
+        <li><a href="#dg6">6. Application Deployment</a></li>
+        <li><a href="#dg7">7. CI/CD Pipeline</a></li>
+        <li><a href="#dg8">8. Health Checks & Monitoring</a></li>
+        <li><a href="#dg9">9. Scaling & Performance Tuning</a></li>
+        <li><a href="#dg10">10. Rollback Procedure</a></li>
+        <li><a href="#dg11">11. Security Hardening Checklist</a></li>
+        <li><a href="#dg12">12. Troubleshooting</a></li>
+    </ol>
+</div>
+
+<h2>Revision History</h2>
+<table class="revision-table">
+    <thead><tr><th>Version</th><th>Date</th><th>Author</th><th>Description</th></tr></thead>
+    <tbody>
+        <tr><td>1.0</td><td>{{ date }}</td><td>DocuForge AI</td><td>Initial deployment guide</td></tr>
+    </tbody>
+</table>
+
+<!-- SECTION 1 -->
+<h2 id="dg1">1. Overview</h2>
+<div class="section-intro">
+    This document provides step-by-step instructions for deploying the <strong>{{ project_name }}</strong> system to a production environment. It covers infrastructure setup, environment configuration, database migrations, CI/CD pipeline, monitoring, and rollback procedures.
+</div>
+
+<div class="callout callout-warning">
+    <strong>⚠️ Important:</strong> This guide assumes deployment to a Linux-based cloud environment (AWS/GCP/Azure). Adjust commands for your specific cloud provider as needed. All production credentials must be stored in a secrets manager — never hardcoded.
+</div>
+
+<!-- SECTION 2 -->
+<h2 id="dg2">2. Prerequisites</h2>
+
+<h3>2.1 System Requirements</h3>
+<table>
+    <thead><tr><th>Component</th><th>Minimum Spec</th><th>Recommended</th></tr></thead>
+    <tbody>
+        <tr><td>CPU</td><td>4 vCPUs</td><td>8+ vCPUs</td></tr>
+        <tr><td>RAM</td><td>8 GB</td><td>16+ GB</td></tr>
+        <tr><td>Storage</td><td>50 GB SSD</td><td>200+ GB SSD</td></tr>
+        <tr><td>OS</td><td>Ubuntu 20.04 LTS</td><td>Ubuntu 22.04 LTS</td></tr>
+        <tr><td>Network</td><td>100 Mbps</td><td>1 Gbps</td></tr>
+    </tbody>
+</table>
+
+<h3>2.2 Software Dependencies</h3>
+<table>
+    <thead><tr><th>Software</th><th>Version</th><th>Purpose</th></tr></thead>
+    <tbody>
+        <tr><td>Docker</td><td>24.0+</td><td>Container runtime</td></tr>
+        <tr><td>Docker Compose</td><td>2.20+</td><td>Multi-container orchestration</td></tr>
+        <tr><td>Kubernetes (optional)</td><td>1.28+</td><td>Production orchestration at scale</td></tr>
+        <tr><td>Nginx</td><td>1.24+</td><td>Reverse proxy & SSL termination</td></tr>
+        <tr><td>PostgreSQL</td><td>15+</td><td>Primary database</td></tr>
+        <tr><td>Redis</td><td>7.0+</td><td>Cache & session store</td></tr>
+        <tr><td>Python</td><td>3.11+</td><td>Backend runtime</td></tr>
+        <tr><td>Node.js</td><td>20 LTS</td><td>Frontend build</td></tr>
+        <tr><td>Certbot</td><td>Latest</td><td>Let's Encrypt SSL certificates</td></tr>
+    </tbody>
+</table>
+
+<!-- SECTION 3 -->
+<h2 id="dg3">3. Architecture Overview</h2>
+
+<p>The production architecture follows a <strong>3-tier deployment model</strong>:</p>
+<ul>
+    <li><strong>Load Balancer</strong> — Nginx / AWS ALB distributes traffic across application instances</li>
+    <li><strong>Application Tier</strong> — Docker containers running the backend API (auto-scaled)</li>
+    <li><strong>Data Tier</strong> — Managed PostgreSQL (RDS / Cloud SQL) + Redis cluster</li>
+</ul>
+
+<pre>
+Internet → CloudFlare CDN → Load Balancer (Nginx)
+                                    ↓
+                     ┌──────────────────────────┐
+                     │   App Container Pool      │
+                     │  (API Instances × N)       │
+                     └──────────────┬────────────┘
+                                    ↓
+                     ┌──────────────────────────┐
+                     │  PostgreSQL (Primary)      │
+                     │  PostgreSQL (Read Replica) │
+                     │  Redis Cluster             │
+                     └──────────────────────────┘
+</pre>
+
+<!-- SECTION 4 -->
+<h2 id="dg4">4. Environment Configuration</h2>
+
+<h3>4.1 Required Environment Variables</h3>
+<div class="callout callout-danger">
+    <strong>🔐 Security:</strong> Never commit <code>.env</code> files to version control. Use AWS Secrets Manager, GCP Secret Manager, or HashiCorp Vault.
+</div>
+
+<table>
+    <thead><tr><th>Variable</th><th>Description</th><th>Example</th></tr></thead>
+    <tbody>
+        <tr><td><code>DATABASE_URL</code></td><td>PostgreSQL connection string</td><td><code>postgresql://user:pass@db:5432/appdb</code></td></tr>
+        <tr><td><code>REDIS_URL</code></td><td>Redis connection URL</td><td><code>redis://:password@redis:6379/0</code></td></tr>
+        <tr><td><code>SECRET_KEY</code></td><td>JWT signing key (256-bit random)</td><td><code>$(openssl rand -hex 32)</code></td></tr>
+        <tr><td><code>ALLOWED_HOSTS</code></td><td>Comma-separated trusted hostnames</td><td><code>app.example.com,api.example.com</code></td></tr>
+        <tr><td><code>CORS_ORIGINS</code></td><td>Allowed CORS origins</td><td><code>https://app.example.com</code></td></tr>
+        <tr><td><code>DEBUG</code></td><td>Debug mode (must be false in prod)</td><td><code>false</code></td></tr>
+        <tr><td><code>LOG_LEVEL</code></td><td>Application log level</td><td><code>INFO</code></td></tr>
+        <tr><td><code>SMTP_HOST</code></td><td>Email server host</td><td><code>smtp.sendgrid.net</code></td></tr>
+        <tr><td><code>PAYMENT_API_KEY</code></td><td>Payment gateway API key</td><td>Stored in secrets manager</td></tr>
+        <tr><td><code>MAX_WORKERS</code></td><td>Uvicorn/Gunicorn worker count</td><td><code>4</code> (= 2×CPU cores + 1)</td></tr>
+    </tbody>
+</table>
+
+<!-- SECTION 5 -->
+<h2 id="dg5">5. Database Setup & Migrations</h2>
+
+<h3>5.1 Initial Database Setup</h3>
+<pre>
+# Connect to PostgreSQL
+psql -h $DB_HOST -U postgres
+
+# Create application database and user
+CREATE DATABASE appdb;
+CREATE USER appuser WITH ENCRYPTED PASSWORD 'strong_password';
+GRANT ALL PRIVILEGES ON DATABASE appdb TO appuser;
+\q
+</pre>
+
+<h3>5.2 Running Database Migrations</h3>
+<pre>
+# Run Alembic migrations
+cd /app
+alembic upgrade head
+
+# Verify migration status
+alembic current
+
+# Seed initial data (if applicable)
+python scripts/seed_data.py
+</pre>
+
+<h3>5.3 Database Backup Schedule</h3>
+<table>
+    <thead><tr><th>Backup Type</th><th>Frequency</th><th>Retention</th><th>Storage</th></tr></thead>
+    <tbody>
+        <tr><td>Full Backup</td><td>Daily (02:00 UTC)</td><td>30 days</td><td>S3 / Cloud Storage</td></tr>
+        <tr><td>Incremental (WAL)</td><td>Every 5 minutes</td><td>7 days</td><td>S3 / Cloud Storage</td></tr>
+        <tr><td>Point-in-time Recovery</td><td>Continuous</td><td>35 days</td><td>Managed DB service</td></tr>
+    </tbody>
+</table>
+
+<!-- SECTION 6 -->
+<h2 id="dg6">6. Application Deployment</h2>
+
+<h3>6.1 Build Docker Image</h3>
+<pre>
+# Build production image
+docker build -t {{ project_name | lower | replace(" ", "-") }}:latest \
+  --build-arg BUILD_ENV=production .
+
+# Tag with version
+docker tag {{ project_name | lower | replace(" ", "-") }}:latest \
+  registry.example.com/{{ project_name | lower | replace(" ", "-") }}:v1.0.0
+
+# Push to registry
+docker push registry.example.com/{{ project_name | lower | replace(" ", "-") }}:v1.0.0
+</pre>
+
+<h3>6.2 Deploy with Docker Compose</h3>
+<pre>
+# Pull latest images
+docker-compose -f docker-compose.prod.yml pull
+
+# Start services (zero-downtime rolling update)
+docker-compose -f docker-compose.prod.yml up -d --remove-orphans
+
+# Check status
+docker-compose -f docker-compose.prod.yml ps
+
+# View logs
+docker-compose -f docker-compose.prod.yml logs -f --tail=100 app
+</pre>
+
+<h3>6.3 Nginx Configuration</h3>
+<pre>
+server {
+    listen 443 ssl http2;
+    server_name {{ project_name | lower | replace(" ", "-") }}.example.com;
+
+    ssl_certificate     /etc/letsencrypt/live/example.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/example.com/privkey.pem;
+    ssl_protocols       TLSv1.3;
+    ssl_ciphers         HIGH:!aNULL:!MD5;
+
+    gzip on;
+    gzip_types text/plain application/json application/javascript text/css;
+
+    location /api/ {
+        proxy_pass         http://localhost:8000;
+        proxy_set_header   Host $host;
+        proxy_set_header   X-Real-IP $remote_addr;
+        proxy_set_header   X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header   X-Forwarded-Proto $scheme;
+        proxy_read_timeout 30s;
+        proxy_connect_timeout 10s;
+    }
+
+    location / {
+        root /var/www/html;
+        index index.html;
+        try_files $uri $uri/ /index.html;
+    }
+}
+
+# Redirect HTTP → HTTPS
+server {
+    listen 80;
+    server_name _;
+    return 301 https://$host$request_uri;
+}
+</pre>
+
+<!-- SECTION 7 -->
+<h2 id="dg7">7. CI/CD Pipeline</h2>
+
+<p>The recommended CI/CD pipeline (GitHub Actions) runs the following stages on every push to <code>main</code>:</p>
+<table>
+    <thead><tr><th>Stage</th><th>Actions</th><th>On Failure</th></tr></thead>
+    <tbody>
+        <tr><td>1. Lint & Format</td><td>flake8, black, eslint</td><td>Block merge</td></tr>
+        <tr><td>2. Unit Tests</td><td>pytest with coverage check (≥ 80%)</td><td>Block merge</td></tr>
+        <tr><td>3. Security Scan</td><td>Bandit (Python), SAST, dependency vulnerability check</td><td>Block if critical</td></tr>
+        <tr><td>4. Build Docker Image</td><td>docker build + push to registry</td><td>Block deploy</td></tr>
+        <tr><td>5. Deploy to Staging</td><td>docker-compose up on staging server</td><td>Alert team</td></tr>
+        <tr><td>6. Integration Tests</td><td>Run Playwright E2E tests against staging</td><td>Block prod deploy</td></tr>
+        <tr><td>7. Deploy to Production</td><td>Rolling update on prod (manual approval gate)</td><td>Auto-rollback</td></tr>
+    </tbody>
+</table>
+
+<!-- SECTION 8 -->
+<h2 id="dg8">8. Health Checks & Monitoring</h2>
+
+<h3>8.1 Health Check Endpoints</h3>
+<table>
+    <thead><tr><th>Endpoint</th><th>Expected Response</th><th>Check Interval</th></tr></thead>
+    <tbody>
+        <tr><td><code>GET /health</code></td><td><code>{"status": "ok"}</code> — 200 OK</td><td>Every 30s</td></tr>
+        <tr><td><code>GET /health/db</code></td><td>Database connection check</td><td>Every 60s</td></tr>
+        <tr><td><code>GET /health/cache</code></td><td>Redis ping check</td><td>Every 60s</td></tr>
+    </tbody>
+</table>
+
+<h3>8.2 Monitoring Stack</h3>
+<ul>
+    <li><strong>Metrics</strong> — Prometheus + Grafana for CPU, memory, request rates, error rates</li>
+    <li><strong>Logs</strong> — ELK Stack (Elasticsearch + Logstash + Kibana) or CloudWatch Logs</li>
+    <li><strong>Alerting</strong> — PagerDuty / OpsGenie for P1/P2 incidents; Slack for P3/P4</li>
+    <li><strong>Uptime Monitoring</strong> — Pingdom / UptimeRobot with 1-minute checks</li>
+    <li><strong>APM</strong> — Datadog or New Relic for distributed tracing</li>
+</ul>
+
+<!-- SECTION 9 -->
+<h2 id="dg9">9. Scaling & Performance Tuning</h2>
+
+<h3>9.1 Horizontal Scaling</h3>
+<pre>
+# Scale application containers (Docker Swarm)
+docker service scale app=5
+
+# Or via Kubernetes
+kubectl scale deployment app --replicas=5
+</pre>
+
+<h3>9.2 Performance Settings</h3>
+<table>
+    <thead><tr><th>Setting</th><th>Recommended Value</th><th>Rationale</th></tr></thead>
+    <tbody>
+        <tr><td>Gunicorn workers</td><td><code>(2 × CPU_count) + 1</code></td><td>Optimal for I/O-bound apps</td></tr>
+        <tr><td>DB connection pool size</td><td>20–50</td><td>Prevent connection exhaustion</td></tr>
+        <tr><td>Redis max memory policy</td><td><code>allkeys-lru</code></td><td>Evict least recently used keys</td></tr>
+        <tr><td>Nginx worker_processes</td><td><code>auto</code></td><td>Match CPU core count</td></tr>
+        <tr><td>Nginx keepalive_timeout</td><td><code>65s</code></td><td>Reduce connection overhead</td></tr>
+    </tbody>
+</table>
+
+<!-- SECTION 10 -->
+<h2 id="dg10">10. Rollback Procedure</h2>
+<div class="callout callout-danger">
+    <strong>Rollback must be executed within 15 minutes of a critical production issue.</strong>
+</div>
+<pre>
+# Step 1: Identify the previous stable image tag
+docker ps -a | grep app
+
+# Step 2: Pull previous stable version
+docker pull registry.example.com/{{ project_name | lower | replace(" ", "-") }}:v0.9.0
+
+# Step 3: Update docker-compose.prod.yml with previous image tag
+# Then redeploy
+docker-compose -f docker-compose.prod.yml up -d
+
+# Step 4: Verify rollback
+curl -s https://{{ project_name | lower | replace(" ", "-") }}.example.com/health
+
+# Step 5: Roll back database migration (if needed)
+alembic downgrade -1
+
+# Step 6: Notify stakeholders of rollback event
+</pre>
+
+<!-- SECTION 11 -->
+<h2 id="dg11">11. Security Hardening Checklist</h2>
+<table>
+    <thead><tr><th>Item</th><th>Description</th><th>Status</th></tr></thead>
+    <tbody>
+        <tr><td>TLS 1.3 enforced</td><td>All traffic encrypted with TLS 1.3; SSLv3, TLS 1.0/1.1 disabled</td><td><span class="badge badge-pending">[ ]</span></td></tr>
+        <tr><td>HSTS enabled</td><td>Strict-Transport-Security header with max-age ≥ 1 year</td><td><span class="badge badge-pending">[ ]</span></td></tr>
+        <tr><td>CORS policy</td><td>Only approved origins in CORS_ORIGINS list</td><td><span class="badge badge-pending">[ ]</span></td></tr>
+        <tr><td>Rate limiting</td><td>API rate limiting (100 req/min per IP) at Nginx level</td><td><span class="badge badge-pending">[ ]</span></td></tr>
+        <tr><td>Secrets in vault</td><td>All credentials stored in Secrets Manager, not in env files</td><td><span class="badge badge-pending">[ ]</span></td></tr>
+        <tr><td>Firewall rules</td><td>Only ports 80, 443 open publicly; DB port blocked</td><td><span class="badge badge-pending">[ ]</span></td></tr>
+        <tr><td>Container user</td><td>Docker containers run as non-root user</td><td><span class="badge badge-pending">[ ]</span></td></tr>
+        <tr><td>Image scanning</td><td>Docker image scanned for CVEs before deployment</td><td><span class="badge badge-pending">[ ]</span></td></tr>
+        <tr><td>Log sanitization</td><td>No PII or credentials logged</td><td><span class="badge badge-pending">[ ]</span></td></tr>
+        <tr><td>Backup encryption</td><td>Database backups encrypted at rest with AES-256</td><td><span class="badge badge-pending">[ ]</span></td></tr>
+    </tbody>
+</table>
+
+<!-- SECTION 12 -->
+<h2 id="dg12">12. Troubleshooting</h2>
+<table>
+    <thead><tr><th>Symptom</th><th>Likely Cause</th><th>Resolution</th></tr></thead>
+    <tbody>
+        <tr><td>502 Bad Gateway</td><td>Application container crashed</td><td>Check <code>docker logs app</code>; restart container</td></tr>
+        <tr><td>503 Service Unavailable</td><td>All app instances at capacity</td><td>Scale up; check resource limits</td></tr>
+        <tr><td>DB connection errors</td><td>Connection pool exhausted</td><td>Increase pool size; check for connection leaks</td></tr>
+        <tr><td>Slow API responses</td><td>Missing DB index / cache miss</td><td>Run EXPLAIN ANALYZE; check Redis hit rate</td></tr>
+        <tr><td>JWT auth failures</td><td>SECRET_KEY mismatch / token expired</td><td>Check SECRET_KEY consistency across instances</td></tr>
+        <tr><td>High memory usage</td><td>Memory leak / insufficient Redis eviction</td><td>Set Redis maxmemory-policy; profile app</td></tr>
+    </tbody>
+</table>
+
+<div class="signature-grid">
+    <div class="signature-box">
+        <div class="signature-name">DevOps Lead</div>
+        <div class="signature-line"></div>
+        <div class="signature-label">Approved By & Date</div>
+    </div>
+    <div class="signature-box">
+        <div class="signature-name">Security Officer</div>
+        <div class="signature-line"></div>
+        <div class="signature-label">Security Review & Date</div>
+    </div>
+    <div class="signature-box">
+        <div class="signature-name">Project Manager</div>
+        <div class="signature-line"></div>
+        <div class="signature-label">Authorized By & Date</div>
+    </div>
+</div>
+
+{% endblock %}

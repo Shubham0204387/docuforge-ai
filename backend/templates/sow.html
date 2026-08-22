@@ -1,0 +1,290 @@
+{% extends "base.html" %}
+{% set subtitle = "Statement of Work — Project Contract Document" %}
+{% block content %}
+
+<!-- ══════════════════════════════════════════════
+     TABLE OF CONTENTS
+══════════════════════════════════════════════ -->
+<div class="toc">
+    <h2>Table of Contents</h2>
+    <ol>
+        <li><a href="#sow1">1. Executive Summary</a></li>
+        <li><a href="#sow2">2. Project Scope & Objectives</a></li>
+        <li><a href="#sow3">3. Deliverables</a></li>
+        <li><a href="#sow4">4. Project Timeline & Milestones</a></li>
+        <li><a href="#sow5">5. Roles & Responsibilities</a></li>
+        <li><a href="#sow6">6. Acceptance Criteria</a></li>
+        <li><a href="#sow7">7. Commercial Terms</a></li>
+        <li><a href="#sow8">8. Assumptions & Dependencies</a></li>
+        <li><a href="#sow9">9. Risks & Mitigation</a></li>
+        <li><a href="#sow10">10. Signatures & Approval</a></li>
+    </ol>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     REVISION HISTORY
+══════════════════════════════════════════════ -->
+<h2>Revision History</h2>
+<table class="revision-table">
+    <thead><tr><th>Version</th><th>Date</th><th>Author</th><th>Change Description</th></tr></thead>
+    <tbody>
+        <tr><td>1.0</td><td>{{ date }}</td><td>DocuForge AI</td><td>Initial SOW generated from project requirements</td></tr>
+    </tbody>
+</table>
+
+<!-- ══════════════════════════════════════════════
+     SECTION 1 — EXECUTIVE SUMMARY
+══════════════════════════════════════════════ -->
+<h2 id="sow1">1. Executive Summary</h2>
+<div class="section-intro">
+    This Statement of Work (SOW) defines the scope, deliverables, timeline, responsibilities, and commercial terms for the development of the <strong>{{ project_name }}</strong> system. This document constitutes a formal agreement between the client (hereinafter "Client") and the development team (hereinafter "Service Provider").
+</div>
+<p>{{ objective }}</p>
+<p>The project falls within the <strong>{{ domain | default("general") | title }}</strong> domain and encompasses <strong>{{ total_effort_hours | default(0) }} estimated hours</strong> of development effort across a <strong>{{ total_weeks | default(8) }}-week</strong> timeline.</p>
+
+<!-- ══════════════════════════════════════════════
+     SECTION 2 — SCOPE & OBJECTIVES
+══════════════════════════════════════════════ -->
+<h2 id="sow2">2. Project Scope & Objectives</h2>
+
+<h3>2.1 In-Scope Items</h3>
+<ul>
+    {% for feature in (features if features else ["Core application development", "Database design and implementation", "API development and documentation", "Unit and integration testing", "Deployment and configuration"]) %}
+    <li>{{ feature }}</li>
+    {% endfor %}
+    <li>Source code repository setup and CI/CD pipeline configuration</li>
+    <li>Technical documentation (architecture, API reference, deployment guide)</li>
+    <li>User Acceptance Testing (UAT) support — up to 10 business days</li>
+</ul>
+
+<h3>2.2 Out-of-Scope Items</h3>
+<ul>
+    <li>Hardware procurement or infrastructure hosting costs (billed separately)</li>
+    <li>Ongoing maintenance beyond the warranty period (subject to separate support agreement)</li>
+    <li>Training and onboarding of end-users (available as optional add-on)</li>
+    <li>Third-party license costs (e.g., maps, payment gateway transaction fees)</li>
+    <li>Regulatory approvals or legal compliance certifications</li>
+</ul>
+
+<h3>2.3 Project Objectives</h3>
+<table>
+    <thead><tr><th>#</th><th>Objective</th><th>Success Metric</th><th>Priority</th></tr></thead>
+    <tbody>
+        <tr><td>1</td><td>Deliver a fully functional, production-ready application</td><td>All MUST requirements implemented and tested</td><td><span class="badge badge-must">Critical</span></td></tr>
+        <tr><td>2</td><td>Achieve high system performance and reliability</td><td>p95 response time &lt; 1s; 99.9% uptime SLA</td><td><span class="badge badge-must">Critical</span></td></tr>
+        <tr><td>3</td><td>Complete delivery within agreed timeline and budget</td><td>Project completed ≤ {{ total_weeks | default(8) }} weeks, ≤ budget estimate</td><td><span class="badge badge-must">Critical</span></td></tr>
+        <tr><td>4</td><td>Maintain code quality standards</td><td>≥ 80% test coverage; zero critical security vulnerabilities</td><td><span class="badge badge-should">High</span></td></tr>
+        <tr><td>5</td><td>Deliver complete technical documentation</td><td>API docs, deployment guide, and architecture diagrams delivered</td><td><span class="badge badge-should">High</span></td></tr>
+    </tbody>
+</table>
+
+<!-- ══════════════════════════════════════════════
+     SECTION 3 — DELIVERABLES
+══════════════════════════════════════════════ -->
+<h2 id="sow3">3. Deliverables</h2>
+<table>
+    <thead><tr><th>Deliverable</th><th>Description</th><th>Format</th><th>Due</th></tr></thead>
+    <tbody>
+        <tr><td><strong>Source Code</strong></td><td>Complete, version-controlled application source code</td><td>Git Repository</td><td>Week {{ total_weeks | default(8) }}</td></tr>
+        <tr><td><strong>SRS Document</strong></td><td>IEEE 830-compliant Software Requirements Specification</td><td>PDF</td><td>Week 1</td></tr>
+        <tr><td><strong>Architecture Document</strong></td><td>UML diagrams (7 types), system architecture overview</td><td>PDF + PNG</td><td>Week 2</td></tr>
+        <tr><td><strong>Database Schema</strong></td><td>Complete ERD and migration scripts</td><td>SQL + PDF</td><td>Week 3</td></tr>
+        <tr><td><strong>API Documentation</strong></td><td>OpenAPI 3.0 / Swagger documentation for all endpoints</td><td>HTML / JSON</td><td>Week {{ total_weeks // 2 | default(4) }}</td></tr>
+        <tr><td><strong>Test Reports</strong></td><td>Unit test results, integration test coverage report</td><td>HTML + PDF</td><td>Week {{ (total_weeks | default(8)) - 1 }}</td></tr>
+        <tr><td><strong>Deployment Guide</strong></td><td>Step-by-step production deployment instructions</td><td>PDF</td><td>Week {{ total_weeks | default(8) }}</td></tr>
+        <tr><td><strong>User Manual</strong></td><td>End-user documentation for all features</td><td>PDF</td><td>Week {{ total_weeks | default(8) }}</td></tr>
+    </tbody>
+</table>
+
+<!-- ══════════════════════════════════════════════
+     SECTION 4 — TIMELINE & MILESTONES
+══════════════════════════════════════════════ -->
+<h2 id="sow4">4. Project Timeline & Milestones</h2>
+<table>
+    <thead>
+        <tr>
+            <th style="width:40px">#</th>
+            <th>Milestone</th>
+            <th style="width:80px">Week</th>
+            <th>Key Deliverables</th>
+            <th style="width:100px">Status</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for milestone in milestones %}
+    <tr>
+        <td>{{ loop.index }}</td>
+        <td><strong>{{ milestone.name }}</strong></td>
+        <td style="text-align:center">Week {{ milestone.week }}</td>
+        <td>{{ milestone.deliverables }}</td>
+        <td><span class="badge badge-pending">Planned</span></td>
+    </tr>
+    {% else %}
+    <tr><td>1</td><td><strong>Project Kickoff & Requirements Finalization</strong></td><td style="text-align:center">Week 1</td><td>Approved SRS, Project Plan</td><td><span class="badge badge-pending">Planned</span></td></tr>
+    <tr><td>2</td><td><strong>Architecture & Design Completion</strong></td><td style="text-align:center">Week 2</td><td>System Architecture, UML Diagrams, DB Schema</td><td><span class="badge badge-pending">Planned</span></td></tr>
+    <tr><td>3</td><td><strong>Backend Development (MVP)</strong></td><td style="text-align:center">Week 5</td><td>Core APIs, Business Logic, Database Integration</td><td><span class="badge badge-pending">Planned</span></td></tr>
+    <tr><td>4</td><td><strong>Frontend Development</strong></td><td style="text-align:center">Week 7</td><td>UI Components, API Integration, Responsive Design</td><td><span class="badge badge-pending">Planned</span></td></tr>
+    <tr><td>5</td><td><strong>Testing & QA</strong></td><td style="text-align:center">Week 9</td><td>Unit Tests, Integration Tests, Performance Tests</td><td><span class="badge badge-pending">Planned</span></td></tr>
+    <tr><td>6</td><td><strong>UAT & Client Review</strong></td><td style="text-align:center">Week 10</td><td>UAT Sign-off, Bug Fixes</td><td><span class="badge badge-pending">Planned</span></td></tr>
+    <tr><td>7</td><td><strong>Production Deployment</strong></td><td style="text-align:center">Week 12</td><td>Live System, Deployment Documentation</td><td><span class="badge badge-pending">Planned</span></td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<!-- ══════════════════════════════════════════════
+     SECTION 5 — ROLES & RESPONSIBILITIES
+══════════════════════════════════════════════ -->
+<h2 id="sow5">5. Roles & Responsibilities</h2>
+<table>
+    <thead><tr><th>Role</th><th>Responsibility</th><th>Assigned To</th></tr></thead>
+    <tbody>
+        <tr><td><strong>Project Manager</strong></td><td>Overall project delivery, stakeholder communication, risk management</td><td>Service Provider</td></tr>
+        <tr><td><strong>Lead Developer</strong></td><td>Technical architecture, code review, team leadership</td><td>Service Provider</td></tr>
+        <tr><td><strong>Backend Developer(s)</strong></td><td>API development, database design, business logic implementation</td><td>Service Provider</td></tr>
+        <tr><td><strong>Frontend Developer(s)</strong></td><td>UI/UX implementation, responsive design, API integration</td><td>Service Provider</td></tr>
+        <tr><td><strong>QA Engineer</strong></td><td>Test planning, execution, defect tracking, performance testing</td><td>Service Provider</td></tr>
+        <tr><td><strong>DevOps Engineer</strong></td><td>CI/CD pipeline, infrastructure setup, deployment automation</td><td>Service Provider</td></tr>
+        <tr><td><strong>Product Owner</strong></td><td>Requirement clarification, sprint prioritization, UAT sign-off</td><td>Client</td></tr>
+        <tr><td><strong>Subject Matter Expert</strong></td><td>Domain knowledge, business process clarification</td><td>Client</td></tr>
+    </tbody>
+</table>
+
+<!-- ══════════════════════════════════════════════
+     SECTION 6 — ACCEPTANCE CRITERIA
+══════════════════════════════════════════════ -->
+<h2 id="sow6">6. Acceptance Criteria</h2>
+<p>The project will be considered complete and accepted when <strong>all</strong> of the following criteria are met:</p>
+<ul>
+    <li>All <strong>MUST</strong> priority requirements are fully implemented and pass acceptance tests</li>
+    <li>System performance: p95 API response time &lt; 1 second under standard load</li>
+    <li>Security: Zero critical (CVSS ≥ 9.0) or high (CVSS ≥ 7.0) vulnerabilities outstanding</li>
+    <li>Test coverage: ≥ 80% line coverage across all backend modules</li>
+    <li>All deliverables listed in Section 3 are provided in agreed formats</li>
+    <li>UAT sign-off obtained from the Client's designated Product Owner</li>
+    <li>Production deployment successfully completed with zero data loss</li>
+</ul>
+
+<!-- ══════════════════════════════════════════════
+     SECTION 7 — COMMERCIAL TERMS
+══════════════════════════════════════════════ -->
+<h2 id="sow7">7. Commercial Terms</h2>
+
+<div class="metric-grid">
+    <div class="metric-card">
+        <div class="metric-value">{{ total_effort_hours | default(0) }}</div>
+        <div class="metric-label">Estimated Hours</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-value">${{ hourly_rate | default(100) }}</div>
+        <div class="metric-label">Hourly Rate (USD)</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-value">${{ "{:,}".format(budget_estimate | default(0)) }}</div>
+        <div class="metric-label">Total Budget Estimate</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-value">{{ total_weeks | default(8) }} wk</div>
+        <div class="metric-label">Project Duration</div>
+    </div>
+</div>
+
+<h3>7.1 Payment Schedule</h3>
+<table>
+    <thead><tr><th>Payment</th><th>Percentage</th><th>Amount (USD)</th><th>Trigger Condition</th></tr></thead>
+    <tbody>
+        <tr><td>Upfront / Mobilization</td><td>25%</td><td>${{ "{:,}".format((budget_estimate | default(0)) * 0.25 | int) }}</td><td>Contract signing</td></tr>
+        <tr><td>Milestone 1</td><td>25%</td><td>${{ "{:,}".format((budget_estimate | default(0)) * 0.25 | int) }}</td><td>Architecture & design approval (Week 2)</td></tr>
+        <tr><td>Milestone 2</td><td>30%</td><td>${{ "{:,}".format((budget_estimate | default(0)) * 0.30 | int) }}</td><td>MVP backend completion (Week {{ total_weeks // 2 | default(5) }})</td></tr>
+        <tr><td>Final</td><td>20%</td><td>${{ "{:,}".format((budget_estimate | default(0)) * 0.20 | int) }}</td><td>Production deployment & UAT sign-off</td></tr>
+    </tbody>
+</table>
+
+<h3>7.2 Change Management</h3>
+<p>Any changes to the agreed scope will be documented via a formal Change Request (CR). Each CR will include an impact assessment on timeline and cost before client approval is sought. Changes approved by both parties will be reflected in an updated SOW addendum.</p>
+
+<!-- ══════════════════════════════════════════════
+     SECTION 8 — ASSUMPTIONS & DEPENDENCIES
+══════════════════════════════════════════════ -->
+<h2 id="sow8">8. Assumptions & Dependencies</h2>
+
+<h3>8.1 Assumptions</h3>
+<ul>
+    <li>Client will provide timely feedback (within 3 business days) for review cycles</li>
+    <li>Infrastructure access (cloud accounts, API keys) will be provided within 5 business days of project start</li>
+    <li>Requirements are stable; major scope changes will trigger CR process</li>
+    <li>Third-party APIs maintain their current specifications during the project</li>
+    <li>The development team will have uninterrupted access to required tools and resources</li>
+</ul>
+
+<h3>8.2 External Dependencies</h3>
+<ul>
+    {% for integration in (integrations if integrations else ["Payment Gateway API", "Email Service Provider", "Cloud Hosting Platform"]) %}
+    <li><strong>{{ integration }}</strong> — availability and API stability required</li>
+    {% endfor %}
+</ul>
+
+<!-- ══════════════════════════════════════════════
+     SECTION 9 — RISKS & MITIGATION
+══════════════════════════════════════════════ -->
+<h2 id="sow9">9. Risks & Mitigation</h2>
+<table>
+    <thead><tr><th>Risk</th><th>Probability</th><th>Impact</th><th>Mitigation Strategy</th></tr></thead>
+    <tbody>
+        <tr>
+            <td>Scope creep due to changing requirements</td>
+            <td><span class="badge badge-medium">Medium</span></td>
+            <td><span class="badge badge-high">High</span></td>
+            <td>Formal Change Request process; baseline SRS locked at Week 1</td>
+        </tr>
+        <tr>
+            <td>Third-party API downtime or breaking changes</td>
+            <td><span class="badge badge-low">Low</span></td>
+            <td><span class="badge badge-high">High</span></td>
+            <td>Mock/stub APIs for development; SLA monitoring; fallback flows</td>
+        </tr>
+        <tr>
+            <td>Key personnel unavailability</td>
+            <td><span class="badge badge-low">Low</span></td>
+            <td><span class="badge badge-medium">Medium</span></td>
+            <td>Cross-training; documented architecture; minimum 2-person redundancy</td>
+        </tr>
+        <tr>
+            <td>Performance targets not achieved initially</td>
+            <td><span class="badge badge-medium">Medium</span></td>
+            <td><span class="badge badge-medium">Medium</span></td>
+            <td>Load testing in Week 8; dedicated performance optimization sprint</td>
+        </tr>
+        <tr>
+            <td>Security vulnerabilities discovered late</td>
+            <td><span class="badge badge-low">Low</span></td>
+            <td><span class="badge badge-high">High</span></td>
+            <td>Security review at each milestone; automated SAST/DAST in CI/CD</td>
+        </tr>
+    </tbody>
+</table>
+
+<!-- ══════════════════════════════════════════════
+     SECTION 10 — SIGNATURES
+══════════════════════════════════════════════ -->
+<h2 id="sow10">10. Signatures & Approval</h2>
+<p>By signing below, both parties agree to the terms, scope, timeline, and commercial terms outlined in this Statement of Work.</p>
+
+<div class="signature-grid">
+    <div class="signature-box">
+        <div class="signature-name">Client Representative</div>
+        <div class="signature-line"></div>
+        <div class="signature-label">Name, Title & Date</div>
+    </div>
+    <div class="signature-box">
+        <div class="signature-name">Service Provider — PM</div>
+        <div class="signature-line"></div>
+        <div class="signature-label">Name, Title & Date</div>
+    </div>
+    <div class="signature-box">
+        <div class="signature-name">Legal Witness</div>
+        <div class="signature-line"></div>
+        <div class="signature-label">Name & Date</div>
+    </div>
+</div>
+
+{% endblock %}

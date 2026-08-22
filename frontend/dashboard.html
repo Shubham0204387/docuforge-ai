@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard – DocuForge AI</title>
+  <!-- Tailwind + Font Awesome + Alpine.js -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <script src="js/app.js"></script>
+  <style>
+    /* Custom CSS variables for light/dark mode */
+    :root {
+      --bg-primary: #fefcf8;
+      --bg-secondary: #ffffff;
+      --text-primary: #1a110b;
+      --text-secondary: #4b5563;
+      --border: #e5e7eb;
+      --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+    }
+    .dark {
+      --bg-primary: #111827;
+      --bg-secondary: #1f2937;
+      --text-primary: #f3f4f6;
+      --text-secondary: #9ca3af;
+      --border: #374151;
+      --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+    }
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      transition: background-color 0.3s, color 0.2s;
+    }
+    /* Sidebar transitions */
+    .sidebar-expanded { width: 260px; }
+    .sidebar-collapsed { width: 80px; }
+    .sidebar {
+      transition: width 0.3s ease;
+      background: linear-gradient(135deg, #2d1b13 0%, #1a0f0a 100%);
+      color: #e5e7eb;
+    }
+    .card {
+      background-color: var(--bg-secondary);
+      border-radius: 1rem;
+      box-shadow: var(--card-shadow);
+      transition: transform 0.2s, box-shadow 0.2s;
+      border: 1px solid var(--border);
+    }
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 20px 25px -12px rgba(0,0,0,0.25);
+    }
+    .btn-primary {
+      background-color: #d4a373;
+      color: white;
+      padding: 0.5rem 1.25rem;
+      border-radius: 0.5rem;
+      transition: background-color 0.2s;
+    }
+    .btn-primary:hover {
+      background-color: #c2925e;
+    }
+    .stat-card {
+      background: linear-gradient(135deg, #d4a37320 0%, #c2925e10 100%);
+      backdrop-filter: blur(4px);
+    }
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 1000;
+      background-color: #2d1b13;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      box-shadow: 0 10px 15px -3px rgba(0,0,0,0.2);
+    }
+  </style>
+</head>
+<body class="antialiased" x-data="dashboard()" x-init="init()">
+  <div class="flex h-screen overflow-hidden">
+    <!-- Sidebar -->
+    <div class="sidebar flex flex-col justify-between" :class="sidebarCollapsed ? 'sidebar-collapsed' : 'sidebar-expanded'">
+      <div>
+        <div class="p-4 flex items-center justify-between border-b border-gray-700">
+          <div x-show="!sidebarCollapsed" class="flex items-center gap-2 text-xl font-bold text-[#d4a373]">
+            <i class="fas fa-robot"></i> DocuForge
+          </div>
+          <button @click="sidebarCollapsed = !sidebarCollapsed" class="text-gray-400 hover:text-[#d4a373] transition">
+            <i class="fas" :class="sidebarCollapsed ? 'fa-chevron-right' : 'fa-chevron-left'"></i>
+          </button>
+        </div>
+        <nav class="mt-6 space-y-1">
+          <a href="dashboard.html" class="flex items-center px-4 py-2.5 text-gray-300 bg-[#d4a37320] border-l-4 border-[#d4a373]">
+            <i class="fas fa-tachometer-alt w-5"></i><span x-show="!sidebarCollapsed" class="ml-3">Dashboard</span>
+          </a>
+          <a href="dashboard.html" class="flex items-center px-4 py-2.5 text-gray-400 hover:text-white hover:bg-gray-800/50 transition">
+            <i class="fas fa-project-diagram w-5"></i><span x-show="!sidebarCollapsed" class="ml-3">Projects</span>
+          </a>
+          <a href="analytics.html" class="flex items-center px-4 py-2.5 text-gray-400 hover:text-white hover:bg-gray-800/50 transition">
+            <i class="fas fa-chart-line w-5"></i><span x-show="!sidebarCollapsed" class="ml-3">Analytics</span>
+          </a>
+          <a href="settings.html" class="flex items-center px-4 py-2.5 text-gray-400 hover:text-white hover:bg-gray-800/50 transition">
+            <i class="fas fa-cog w-5"></i><span x-show="!sidebarCollapsed" class="ml-3">Settings</span>
+          </a>
+        </nav>
+      </div>
+      <div class="p-4 border-t border-gray-700">
+        <button @click="toggleTheme" class="flex items-center w-full px-4 py-2 text-gray-300 hover:bg-gray-800/50 rounded transition">
+          <i class="fas" :class="isDark ? 'fa-sun' : 'fa-moon'"></i>
+          <span x-show="!sidebarCollapsed" class="ml-3" x-text="isDark ? 'Light mode' : 'Dark mode'"></span>
+        </button>
+        <button @click="logout" class="flex items-center w-full px-4 py-2 mt-2 text-red-400 hover:bg-red-900/30 rounded transition">
+          <i class="fas fa-sign-out-alt"></i>
+          <span x-show="!sidebarCollapsed" class="ml-3">Logout</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-1 overflow-y-auto p-6 md:p-8">
+      <!-- Header with welcome message -->
+      <div class="mb-8 flex flex-wrap justify-between items-center">
+        <div>
+          <h1 class="text-3xl font-bold text-[#d4a373]">Dashboard</h1>
+          <p class="text-[var(--text-secondary)] mt-1">Welcome back, <span x-text="userEmail"></span>! Here's your project overview.</p>
+        </div>
+        <button @click="openCreateModal = true" class="btn-primary flex items-center gap-2 mt-3 md:mt-0">
+          <i class="fas fa-plus"></i> New Project
+        </button>
+      </div>
+
+      <!-- Stats Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
+        <div class="stat-card card p-5">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm text-[var(--text-secondary)]">Total Projects</p>
+              <p class="text-3xl font-bold" x-text="projects.length">0</p>
+            </div>
+            <i class="fas fa-folder-open text-4xl text-[#d4a373] opacity-70"></i>
+          </div>
+        </div>
+        <div class="stat-card card p-5">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm text-[var(--text-secondary)]">Avg. Requirements</p>
+              <p class="text-3xl font-bold" x-text="averageRequirements">0</p>
+            </div>
+            <i class="fas fa-list-check text-4xl text-[#d4a373] opacity-70"></i>
+          </div>
+        </div>
+        <div class="stat-card card p-5">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm text-[var(--text-secondary)]">Avg. RQI</p>
+              <p class="text-3xl font-bold" x-text="averageRQI">0</p>
+            </div>
+            <i class="fas fa-chart-simple text-4xl text-[#d4a373] opacity-70"></i>
+          </div>
+        </div>
+        <div class="stat-card card p-5">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm text-[var(--text-secondary)]">Total Effort (h)</p>
+              <p class="text-3xl font-bold" x-text="totalEffort">0</p>
+            </div>
+            <i class="fas fa-clock text-4xl text-[#d4a373] opacity-70"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filters and Search -->
+      <div class="flex flex-wrap gap-3 mb-6">
+        <div class="relative flex-1 min-w-[200px]">
+          <i class="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+          <input type="text" x-model="searchTerm" placeholder="Search by name or domain..." class="w-full pl-10 pr-3 py-2 border rounded-lg bg-[var(--bg-secondary)] text-[var(--text-primary)] border-[var(--border)]">
+        </div>
+        <select x-model="domainFilter" class="px-3 py-2 border rounded-lg bg-[var(--bg-secondary)] border-[var(--border)]">
+          <option value="">All Domains</option>
+          <option value="ecommerce">E‑commerce</option>
+          <option value="healthcare">Healthcare</option>
+          <option value="finance">Finance</option>
+          <option value="education">Education</option>
+        </select>
+        <select x-model="statusFilter" class="px-3 py-2 border rounded-lg bg-[var(--bg-secondary)] border-[var(--border)]">
+          <option value="">All Status</option>
+          <option value="processing">Processing</option>
+          <option value="complete">Complete</option>
+        </select>
+        <button @click="sortOrder = sortOrder === 'asc' ? 'desc' : 'asc'" class="px-3 py-2 border rounded-lg bg-[var(--bg-secondary)] border-[var(--border)] flex items-center gap-1">
+          <i class="fas fa-sort-amount-down"></i> Name <span x-text="sortOrder === 'asc' ? '↑' : '↓'"></span>
+        </button>
+      </div>
+
+      <!-- Projects Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        <template x-for="proj in filteredSortedProjects" :key="proj.id">
+          <div class="card p-5 relative group">
+            <div class="flex justify-between items-start">
+              <div class="flex-1">
+                <h3 class="text-lg font-semibold" x-text="proj.name"></h3>
+                <div class="flex gap-2 mt-1">
+                  <span class="text-xs px-2 py-0.5 rounded-full bg-[#d4a37320] text-[#d4a373]" x-text="proj.domain || 'General'"></span>
+                  <span class="text-xs text-[var(--text-secondary)]"><i class="far fa-file-alt mr-1"></i><span x-text="proj.requirements_count"></span> reqs</span>
+                </div>
+              </div>
+              <button @click="toggleFavourite(proj.id)" class="text-yellow-500 transition hover:scale-110">
+                <i class="fas" :class="favourites.includes(proj.id) ? 'fa-star' : 'fa-star-o'"></i>
+              </button>
+            </div>
+            <div class="mt-3 h-1.5 w-full bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+              <div class="h-full rounded-full bg-[#d4a373]" :style="'width:' + (proj.requirements_count ? Math.min(100, (proj.requirements_count / 20) * 100) : 0) + '%'"></div>
+            </div>
+            <div class="mt-4 flex justify-between items-center">
+              <span class="text-xs px-2 py-1 rounded-full" :class="proj.status === 'complete' ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300'" x-text="proj.status"></span>
+              <div class="flex gap-3">
+                <a :href="`project.html?id=${proj.id}`" class="text-[#d4a373] hover:underline text-sm flex items-center gap-1">Open <i class="fas fa-arrow-right text-xs"></i></a>
+                <button @click.stop="confirmDelete(proj.id, proj.name)" class="text-red-500 hover:text-red-700 text-sm"><i class="fas fa-trash-alt"></i></button>
+              </div>
+            </div>
+          </div>
+        </template>
+        <div x-show="filteredSortedProjects.length === 0 && !loading" class="col-span-full text-center py-12 text-gray-500">
+          <i class="fas fa-folder-open text-5xl mb-2 opacity-50"></i>
+          <p>No projects found. Create your first project!</p>
+        </div>
+        <div x-show="loading" class="col-span-full text-center py-12">
+          <i class="fas fa-spinner fa-spin text-2xl"></i> Loading projects...
+        </div>
+      </div>
+    </div>
+
+    <!-- Create Project Modal -->
+    <div x-show="openCreateModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50" style="display: none;" @click.away="openCreateModal = false">
+      <div class="bg-[var(--bg-secondary)] rounded-xl p-6 w-full max-w-2xl shadow-2xl">
+        <div class="flex justify-between items-center mb-4">
+          <h2 class="text-xl font-bold">Create New Project</h2>
+          <button @click="openCreateModal = false" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times"></i></button>
+        </div>
+        <textarea x-model="newProjectText" rows="6" class="w-full border rounded-lg p-3 bg-[var(--bg-primary)] text-[var(--text-primary)] border-[var(--border)]" placeholder="Describe your requirements... (e.g. Build a food delivery app with real-time tracking and online payment)"></textarea>
+        <div class="flex justify-end gap-3 mt-4">
+          <button @click="openCreateModal = false" class="px-4 py-2 border rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition">Cancel</button>
+          <button @click="createNewProject" class="px-4 py-2 bg-[#d4a373] text-white rounded-lg hover:bg-[#c2925e] transition">Create</button>
+        </div>
+        <p x-show="createError" x-text="createError" class="text-red-500 text-sm mt-2"></p>
+      </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div x-show="toastMessage" class="toast flex items-center gap-2" x-transition.duration.300ms>
+      <i class="fas fa-info-circle"></i> <span x-text="toastMessage"></span>
+    </div>
+  </div>
+
+  <script>
+    function dashboard() {
+      return {
+        projects: [],
+        loading: true,
+        sidebarCollapsed: false,
+        isDark: false,
+        searchTerm: '',
+        domainFilter: '',
+        statusFilter: '',
+        sortOrder: 'asc',
+        favourites: [],
+        openCreateModal: false,
+        newProjectText: '',
+        createError: '',
+        toastMessage: '',
+        userEmail: 'User',
+        async init() {
+          this.isDark = localStorage.getItem('theme') === 'dark';
+          if (this.isDark) document.documentElement.classList.add('dark');
+          else document.documentElement.classList.remove('dark');
+          this.loadFavourites();
+          await this.loadProjects();
+          this.loadUserEmail();
+        },
+        loadFavourites() {
+          this.favourites = JSON.parse(localStorage.getItem('favourites') || '[]');
+        },
+        saveFavourites() {
+          localStorage.setItem('favourites', JSON.stringify(this.favourites));
+        },
+        toggleTheme() {
+          this.isDark = !this.isDark;
+          if (this.isDark) document.documentElement.classList.add('dark');
+          else document.documentElement.classList.remove('dark');
+          localStorage.setItem('theme', this.isDark ? 'dark' : 'light');
+        },
+        loadUserEmail() {
+          const token = localStorage.getItem('access_token');
+          if (token) {
+            try {
+              const payload = JSON.parse(atob(token.split('.')[1]));
+              this.userEmail = payload.sub.split('@')[0] || 'User';
+            } catch(e) {}
+          }
+        },
+        async loadProjects() {
+          this.loading = true;
+          try {
+            this.projects = await window.api.getProjects();
+          } catch(e) { console.error(e); }
+          finally { this.loading = false; }
+        },
+        get averageRequirements() {
+          if (!this.projects.length) return 0;
+          const total = this.projects.reduce((acc, p) => acc + (p.requirements_count || 0), 0);
+          return Math.round(total / this.projects.length);
+        },
+        get averageRQI() {
+          // Placeholder – ideally fetch real RQI per project
+          return 72;
+        },
+        get totalEffort() {
+          if (!this.projects.length) return 0;
+          const total = this.projects.reduce((acc, p) => acc + (p.requirements_count || 0) * 5, 0);
+          return total;
+        },
+        get filteredSortedProjects() {
+          let filtered = this.projects.filter(p => {
+            const matchesSearch = p.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+                                  (p.domain || '').toLowerCase().includes(this.searchTerm.toLowerCase());
+            const matchesDomain = !this.domainFilter || p.domain === this.domainFilter;
+            const matchesStatus = !this.statusFilter || p.status === this.statusFilter;
+            return matchesSearch && matchesDomain && matchesStatus;
+          });
+          filtered.sort((a,b) => {
+            let comparison = a.name.localeCompare(b.name);
+            return this.sortOrder === 'asc' ? comparison : -comparison;
+          });
+          return filtered;
+        },
+        toggleFavourite(id) {
+          if (this.favourites.includes(id)) {
+            this.favourites = this.favourites.filter(f => f !== id);
+            this.showToast('Removed from favourites');
+          } else {
+            this.favourites.push(id);
+            this.showToast('Added to favourites');
+          }
+          this.saveFavourites();
+        },
+        showToast(msg) {
+          this.toastMessage = msg;
+          setTimeout(() => { this.toastMessage = ''; }, 2500);
+        },
+        async createNewProject() {
+          if (!this.newProjectText.trim()) return;
+          this.createError = '';
+          try {
+            const result = await window.api.createProject(this.newProjectText);
+            this.showToast('Project created! Redirecting...');
+            setTimeout(() => {
+              window.location.href = `project.html?id=${result.project_id}`;
+            }, 500);
+          } catch(e) {
+            this.createError = e.message || 'Failed to create project. Check backend.';
+          }
+        },
+        confirmDelete(id, name) {
+          if (confirm(`Delete project "${name}"? This action cannot be undone.`)) {
+            this.deleteProject(id);
+          }
+        },
+        async deleteProject(id) {
+          try {
+            const success = await window.api.deleteProject(id);
+            if (success) {
+              this.showToast('Project deleted successfully');
+              await this.loadProjects();
+            } else {
+              this.showToast('Delete failed', true);
+            }
+          } catch(e) {
+            this.showToast('Error deleting project', true);
+          }
+        },
+        logout() {
+          window.api.logout();
+        }
+      }
+    }
+  </script>
+</body>
+</html>

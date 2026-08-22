@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h2>1. Introduction</h2>
+<h3>1.1 Purpose</h3>
+<p>This document specifies the requirements for the <strong>{{ project_name }}</strong> system. It is intended for developers, testers, and project stakeholders.</p>
+
+<h3>1.2 Scope</h3>
+<p>The system will provide functionality as described in the requirements below. Key features include: {{ scope_summary }}</p>
+
+<h3>1.3 Definitions and Acronyms</h3>
+<ul>
+    <li><strong>FR</strong> – Functional Requirement</li>
+    <li><strong>NFR</strong> – Non‑Functional Requirement</li>
+    <li><strong>CON</strong> – Constraint</li>
+    <li><strong>RQI</strong> – Requirement Quality Index</li>
+</ul>
+
+<h2>2. Overall Description</h2>
+<h3>2.1 Product Perspective</h3>
+<p>The {{ project_name }} system is part of the {{ domain }} domain. It integrates with: {{ integrations|join(", ") if integrations else "no external systems specified" }}.</p>
+
+<h3>2.2 User Characteristics</h3>
+<p>Primary users: {{ actors|join(", ") if actors else "Not specified" }}.</p>
+
+<h2>3. Specific Requirements</h2>
+<h3>3.1 Functional Requirements</h3>
+<table>
+    <thead><tr><th>ID</th><th>Requirement</th><th>Priority</th><th>Category</th><th>RQI</th></tr></thead>
+    <tbody>
+    {% for req in functional_requirements %}
+    <tr>
+        <td>{{ req.id }}</td>
+        <td>{{ req.text }}</td>
+        <td><span class="badge {{ req.priority.lower() }}">{{ req.priority }}</span></td>
+        <td>{{ req.category }}</td>
+        <td>{{ req.rqi }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<h3>3.2 Non‑Functional & Constraints</h3>
+<table>
+    <thead><tr><th>ID</th><th>Requirement</th><th>Type</th><th>Priority</th></tr></thead>
+    <tbody>
+    {% for req in nonfunctional_requirements %}
+    <tr>
+        <td>{{ req.id }}</td>
+        <td>{{ req.text }}</td>
+        <td>{{ req.type }}</td>
+        <td><span class="badge {{ req.priority.lower() }}">{{ req.priority }}</span></td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<h2>4. Conflict Analysis</h2>
+{% if conflicts %}
+    {% for conflict in conflicts %}
+    <div class="conflict">
+        <strong>Conflict {{ conflict.id }}:</strong> {{ conflict.description }}<br>
+        <strong>Severity:</strong> {{ conflict.severity }}<br>
+        <strong>Resolution:</strong> {{ conflict.resolution or "Pending" }}
+    </div>
+    {% endfor %}
+{% else %}
+    <p>No conflicts detected.</p>
+{% endif %}
+
+<h2>5. Impact Analysis</h2>
+<p><strong>Total estimated effort:</strong> {{ total_effort_hours }} hours ({{ total_person_days }} person‑days).</p>
+<p><strong>Maximum complexity:</strong> {{ max_complexity }}/10.</p>
+<p><strong>High‑risk requirements:</strong> {{ high_risk_count }}.</p>
+
+<h2>6. Quality Summary</h2>
+<p><strong>Average RQI:</strong> {{ avg_rqi }}/100 – {{ rating }}.</p>
+
+{% endblock %}

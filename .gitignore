@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+.Python
+.venv/
+venv/
+env/
+.env
+.env.*
+*.log
+
+# Local database and generated artifacts
+*.db
+*.sqlite
+backend/docuforge.db
+project_export.zip
+uploads/
+generated/
+
+# Node
+node_modules/
+npm-debug.log*
+dist/
+build/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project specific
+*.db
+*.sqlite
+uploads/
+generated/
+*.pdf
+*.docx
+
+# Secrets
+.env.local
+.env.production

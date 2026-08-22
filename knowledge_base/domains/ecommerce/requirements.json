@@ -1,0 +1,60 @@
+{
+  "domain": "ecommerce",
+  "version": "1.0",
+  "mandatory_requirements": [
+    {
+      "id": "ECOMM-FR-001",
+      "text": "The system shall allow users to create and manage their accounts",
+      "category": "User Management",
+      "priority": "MUST",
+      "reasoning": "User accounts are fundamental for personalized experience"
+    },
+    {
+      "id": "ECOMM-FR-002",
+      "text": "The system shall provide product browsing and search functionality",
+      "category": "Product Discovery",
+      "priority": "MUST",
+      "reasoning": "Users need to find products"
+    },
+    {
+      "id": "ECOMM-FR-003",
+      "text": "The system shall support a shopping cart for multiple items",
+      "category": "Order Management",
+      "priority": "MUST",
+      "reasoning": "Shopping cart is core to ecommerce"
+    },
+    {
+      "id": "ECOMM-FR-004",
+      "text": "The system shall process payments securely",
+      "category": "Payment",
+      "priority": "MUST",
+      "reasoning": "Payment processing is essential"
+    },
+    {
+      "id": "ECOMM-FR-005",
+      "text": "The system shall provide order confirmation and tracking",
+      "category": "Order Management",
+      "priority": "MUST",
+      "reasoning": "Users need order status visibility"
+    }
+  ],
+  "common_patterns": [
+    {
+      "pattern": "user registration",
+      "requirements": [
+        "Email verification required",
+        "Password strength enforcement",
+        "Social login options"
+      ]
+    },
+    {
+      "pattern": "payment",
+      "requirements": [
+        "PCI-DSS compliance",
+        "Multiple payment gateways",
+        "Refund processing",
+        "Payment receipt generation"
+      ]
+    }
+  ]
+}

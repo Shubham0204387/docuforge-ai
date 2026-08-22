@@ -1,0 +1,222 @@
+{% extends "base.html" %}
+{% set subtitle = "Test Plan — IEEE 829 Standard" %}
+{% block content %}
+
+<div class="toc">
+    <h2>Table of Contents</h2>
+    <ol>
+        <li><a href="#tp1">1. Test Plan Identifier & Introduction</a></li>
+        <li><a href="#tp2">2. Test Items</a></li>
+        <li><a href="#tp3">3. Features to be Tested</a></li>
+        <li><a href="#tp4">4. Test Approach</a></li>
+        <li><a href="#tp5">5. Entry & Exit Criteria</a></li>
+        <li><a href="#tp6">6. Test Cases</a></li>
+        <li><a href="#tp7">7. Test Environment</a></li>
+        <li><a href="#tp8">8. Defect Management</a></li>
+        <li><a href="#tp9">9. Test Schedule</a></li>
+        <li><a href="#tp10">10. Approval</a></li>
+    </ol>
+</div>
+
+<h2>Revision History</h2>
+<table class="revision-table">
+    <thead><tr><th>Version</th><th>Date</th><th>Author</th><th>Description</th></tr></thead>
+    <tbody>
+        <tr><td>1.0</td><td>{{ date }}</td><td>DocuForge AI</td><td>Initial test plan auto-generated from project requirements</td></tr>
+    </tbody>
+</table>
+
+<!-- SECTION 1 -->
+<h2 id="tp1">1. Test Plan Identifier & Introduction</h2>
+
+<table>
+    <thead><tr><th>Attribute</th><th>Value</th></tr></thead>
+    <tbody>
+        <tr><td>Test Plan ID</td><td><code>TP-{{ project_name | replace(" ", "") | upper }}-001</code></td></tr>
+        <tr><td>Project</td><td>{{ project_name }}</td></tr>
+        <tr><td>Prepared By</td><td>DocuForge AI — Quality Assurance Module</td></tr>
+        <tr><td>Date</td><td>{{ date }}</td></tr>
+        <tr><td>Standard</td><td>IEEE 829-2008 — Standard for Software and System Test Documentation</td></tr>
+        <tr><td>Total Test Cases</td><td>{{ test_cases | length }}</td></tr>
+    </tbody>
+</table>
+
+<div class="section-intro">
+    This Test Plan describes the testing scope, approach, resources, and schedule for the <strong>{{ project_name }}</strong> project. It identifies the items being tested, the features to be tested, the testing tasks to be performed, the personnel responsible, and the risks associated with the plan.
+</div>
+
+<!-- SECTION 2 -->
+<h2 id="tp2">2. Test Items</h2>
+<p>The following software components are within scope for this test plan:</p>
+<ul>
+    <li><strong>Backend API</strong> — All REST endpoints and business logic</li>
+    <li><strong>Frontend Application</strong> — All user-facing UI screens and workflows</li>
+    <li><strong>Database Layer</strong> — Data integrity, constraints, and migrations</li>
+    <li><strong>Authentication & Authorization</strong> — Login, session management, role-based access</li>
+    <li><strong>External Integrations</strong> — Payment gateway, notifications, third-party APIs</li>
+    <li><strong>Performance & Load</strong> — System behaviour under expected peak load</li>
+</ul>
+
+<!-- SECTION 3 -->
+<h2 id="tp3">3. Features to be Tested</h2>
+<table>
+    <thead><tr><th>Feature Area</th><th>Requirement IDs</th><th>Priority</th><th>Test Type</th></tr></thead>
+    <tbody>
+        {% for tc in test_cases[:8] %}
+        <tr>
+            <td>{{ tc.description[:60] }}…</td>
+            <td><code>{{ tc.req_id }}</code></td>
+            <td><span class="badge badge-must">MUST</span></td>
+            <td>Functional</td>
+        </tr>
+        {% else %}
+        <tr><td>User Authentication</td><td><code>FR-001</code></td><td><span class="badge badge-must">MUST</span></td><td>Functional + Security</td></tr>
+        <tr><td>Core Business Logic</td><td><code>FR-002 to FR-010</code></td><td><span class="badge badge-must">MUST</span></td><td>Functional</td></tr>
+        <tr><td>API Response Codes</td><td><code>NFR-001</code></td><td><span class="badge badge-must">MUST</span></td><td>API Testing</td></tr>
+        <tr><td>System Performance</td><td><code>NFR-002</code></td><td><span class="badge badge-should">SHOULD</span></td><td>Performance</td></tr>
+        <tr><td>Data Security</td><td><code>NFR-003</code></td><td><span class="badge badge-must">MUST</span></td><td>Security</td></tr>
+        <tr><td>UI Responsiveness</td><td><code>NFR-004</code></td><td><span class="badge badge-should">SHOULD</span></td><td>UI Testing</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- SECTION 4 -->
+<h2 id="tp4">4. Test Approach</h2>
+
+<h3>4.1 Testing Levels</h3>
+<table>
+    <thead><tr><th>Level</th><th>Description</th><th>Tools</th><th>Coverage Target</th></tr></thead>
+    <tbody>
+        <tr><td><strong>Unit Testing</strong></td><td>Test individual functions and methods in isolation using mocks</td><td>pytest, Jest</td><td>≥ 80%</td></tr>
+        <tr><td><strong>Integration Testing</strong></td><td>Test interactions between modules, services, and the database</td><td>pytest, Supertest</td><td>≥ 70%</td></tr>
+        <tr><td><strong>System Testing</strong></td><td>End-to-end tests covering full user workflows</td><td>Playwright, Cypress</td><td>All MUST features</td></tr>
+        <tr><td><strong>Performance Testing</strong></td><td>Load and stress testing against SLA targets</td><td>k6, JMeter</td><td>10,000 concurrent users</td></tr>
+        <tr><td><strong>Security Testing</strong></td><td>OWASP Top 10 vulnerability scanning</td><td>OWASP ZAP, Bandit</td><td>Zero critical/high</td></tr>
+        <tr><td><strong>UAT</strong></td><td>Business stakeholder validation of key user journeys</td><td>Manual</td><td>All user stories</td></tr>
+    </tbody>
+</table>
+
+<!-- SECTION 5 -->
+<h2 id="tp5">5. Entry & Exit Criteria</h2>
+
+<h3>5.1 Entry Criteria</h3>
+<ul>
+    <li>All MUST-priority requirements have been implemented and deployed to test environment</li>
+    <li>Test environment is configured and accessible to the QA team</li>
+    <li>Test data has been seeded into the test database</li>
+    <li>All external API stubs/mocks are in place for isolated testing</li>
+    <li>Unit tests pass with ≥ 80% code coverage</li>
+</ul>
+
+<h3>5.2 Exit Criteria</h3>
+<ul>
+    <li>All test cases have been executed at least once</li>
+    <li>Zero critical (P1) or high (P2) defects remain open</li>
+    <li>≥ 95% of test cases pass</li>
+    <li>Performance benchmarks met: p95 response time &lt; 1s under standard load</li>
+    <li>Security scan shows no critical or high CVSS vulnerabilities</li>
+    <li>UAT sign-off received from Product Owner</li>
+</ul>
+
+<!-- SECTION 6 -->
+<h2 id="tp6">6. Test Cases</h2>
+<div class="callout callout-info">
+    <strong>Total Test Cases:</strong> {{ test_cases | length }} auto-generated from {{ test_cases | length }} project requirements.
+</div>
+<table>
+    <caption>Table 6.1 — Test Case Register</caption>
+    <thead>
+        <tr>
+            <th style="width:80px">TC ID</th>
+            <th style="width:80px">Req ID</th>
+            <th>Test Description</th>
+            <th>Pre-conditions</th>
+            <th>Expected Result</th>
+            <th style="width:70px">Status</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for tc in test_cases %}
+    <tr>
+        <td><code>{{ tc.id }}</code></td>
+        <td><code>{{ tc.req_id }}</code></td>
+        <td>{{ tc.description[:180] }}</td>
+        <td>{{ tc.preconditions }}</td>
+        <td>{{ tc.expected }}</td>
+        <td><span class="badge badge-pending">Pending</span></td>
+    </tr>
+    {% else %}
+    <tr><td colspan="6" style="text-align:center;color:#999">No test cases generated. Run analysis first.</td></tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<!-- SECTION 7 -->
+<h2 id="tp7">7. Test Environment</h2>
+<table>
+    <thead><tr><th>Component</th><th>Specification</th></tr></thead>
+    <tbody>
+        <tr><td>Operating System</td><td>Ubuntu 22.04 LTS (server); macOS 14 / Windows 11 (clients)</td></tr>
+        <tr><td>Browser</td><td>Chrome 120+, Firefox 120+, Safari 17+</td></tr>
+        <tr><td>Backend Runtime</td><td>Python 3.11+ / Node.js 20 LTS</td></tr>
+        <tr><td>Database</td><td>PostgreSQL 15 (test instance with anonymized data)</td></tr>
+        <tr><td>Test Data</td><td>Synthetic data generated with Faker; no PII used in test environment</td></tr>
+        <tr><td>CI/CD Integration</td><td>GitHub Actions — tests run on every pull request and push to main</td></tr>
+        <tr><td>Test Reporting</td><td>Allure Report / pytest-html for automated test results</td></tr>
+    </tbody>
+</table>
+
+<!-- SECTION 8 -->
+<h2 id="tp8">8. Defect Management</h2>
+
+<h3>8.1 Defect Severity & Priority Classification</h3>
+<table>
+    <thead><tr><th>Severity</th><th>Description</th><th>SLA (Fix Time)</th><th>Example</th></tr></thead>
+    <tbody>
+        <tr><td><span class="badge badge-high">P1 — Critical</span></td><td>System crash, data loss, security breach</td><td>4 hours</td><td>Payment processing fails; database corruption</td></tr>
+        <tr><td><span class="badge badge-medium">P2 — High</span></td><td>Major feature broken, no workaround</td><td>24 hours</td><td>User cannot log in; core workflow fails</td></tr>
+        <tr><td><span class="badge badge-low">P3 — Medium</span></td><td>Feature partially broken, workaround exists</td><td>5 days</td><td>Export produces wrong format</td></tr>
+        <tr><td><span class="badge badge-pending">P4 — Low</span></td><td>Minor UI issue, cosmetic defect</td><td>Next sprint</td><td>Button misaligned; typo in message</td></tr>
+    </tbody>
+</table>
+
+<h3>8.2 Defect Lifecycle</h3>
+<p><strong>New → Assigned → In Progress → Fixed → Verified → Closed</strong> (or <strong>Rejected</strong> if invalid)</p>
+
+<!-- SECTION 9 -->
+<h2 id="tp9">9. Test Schedule</h2>
+<table>
+    <thead><tr><th>Activity</th><th>Duration</th><th>Start</th><th>Resources</th></tr></thead>
+    <tbody>
+        <tr><td>Test Planning & Case Design</td><td>1 week</td><td>Week 1</td><td>QA Lead</td></tr>
+        <tr><td>Unit Testing</td><td>Continuous</td><td>Week 2+</td><td>Developers</td></tr>
+        <tr><td>Integration Testing</td><td>2 weeks</td><td>Week 6</td><td>QA Engineer</td></tr>
+        <tr><td>System / End-to-End Testing</td><td>1 week</td><td>Week 8</td><td>QA Team</td></tr>
+        <tr><td>Performance Testing</td><td>3 days</td><td>Week 9</td><td>QA Lead + DevOps</td></tr>
+        <tr><td>Security Testing</td><td>3 days</td><td>Week 9</td><td>Security Engineer</td></tr>
+        <tr><td>User Acceptance Testing (UAT)</td><td>1 week</td><td>Week 10</td><td>Client + QA Lead</td></tr>
+        <tr><td>Regression Testing</td><td>2 days</td><td>Week 11</td><td>QA Team</td></tr>
+    </tbody>
+</table>
+
+<!-- SECTION 10 -->
+<h2 id="tp10">10. Approval</h2>
+<div class="signature-grid">
+    <div class="signature-box">
+        <div class="signature-name">QA Manager</div>
+        <div class="signature-line"></div>
+        <div class="signature-label">Signature & Date</div>
+    </div>
+    <div class="signature-box">
+        <div class="signature-name">Project Manager</div>
+        <div class="signature-line"></div>
+        <div class="signature-label">Signature & Date</div>
+    </div>
+    <div class="signature-box">
+        <div class="signature-name">Product Owner</div>
+        <div class="signature-line"></div>
+        <div class="signature-label">Signature & Date</div>
+    </div>
+</div>
+
+{% endblock %}

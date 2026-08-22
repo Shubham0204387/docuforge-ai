@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Settings – DocuForge AI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <script src="js/app.js"></script>
+  <style>
+    :root { /* same as analytics */ }
+    .dark { /* same */ }
+    body { background-color: var(--bg-primary); color: var(--text-primary); }
+    .sidebar-expanded { width: 260px; }
+    .sidebar-collapsed { width: 80px; }
+    .sidebar { transition: width 0.3s ease; background: linear-gradient(135deg, #2d1b13 0%, #1a0f0a 100%); color: #e5e7eb; }
+    .card { background-color: var(--bg-secondary); border-radius: 1rem; box-shadow: var(--card-shadow); border: 1px solid var(--border); }
+    .btn-primary { background-color: #d4a373; color: white; padding: 0.5rem 1.25rem; border-radius: 0.5rem; }
+    .btn-primary:hover { background-color: #c2925e; }
+  </style>
+</head>
+<body x-data="settings()" x-init="init()">
+<div class="flex h-screen overflow-hidden">
+  <!-- Sidebar (same links) -->
+  <div class="sidebar flex flex-col justify-between" :class="sidebarCollapsed ? 'sidebar-collapsed' : 'sidebar-expanded'">
+    <div>
+      <div class="p-4 flex items-center justify-between border-b border-gray-700">
+        <div x-show="!sidebarCollapsed" class="flex items-center gap-2 text-xl font-bold text-[#d4a373]">
+          <i class="fas fa-robot"></i> DocuForge
+        </div>
+        <button @click="sidebarCollapsed = !sidebarCollapsed" class="text-gray-400 hover:text-[#d4a373] transition">
+          <i class="fas" :class="sidebarCollapsed ? 'fa-chevron-right' : 'fa-chevron-left'"></i>
+        </button>
+      </div>
+      <nav class="mt-6 space-y-1">
+        <a href="dashboard.html" class="flex items-center px-4 py-2.5 text-gray-400 hover:text-white hover:bg-gray-800/50 transition">
+          <i class="fas fa-tachometer-alt w-5"></i><span x-show="!sidebarCollapsed" class="ml-3">Dashboard</span>
+        </a>
+        <a href="dashboard.html" class="flex items-center px-4 py-2.5 text-gray-400 hover:text-white hover:bg-gray-800/50 transition">
+          <i class="fas fa-project-diagram w-5"></i><span x-show="!sidebarCollapsed" class="ml-3">Projects</span>
+        </a>
+        <a href="analytics.html" class="flex items-center px-4 py-2.5 text-gray-400 hover:text-white hover:bg-gray-800/50 transition">
+          <i class="fas fa-chart-line w-5"></i><span x-show="!sidebarCollapsed" class="ml-3">Analytics</span>
+        </a>
+        <a href="settings.html" class="flex items-center px-4 py-2.5 text-gray-300 bg-[#d4a37320] border-l-4 border-[#d4a373]">
+          <i class="fas fa-cog w-5"></i><span x-show="!sidebarCollapsed" class="ml-3">Settings</span>
+        </a>
+      </nav>
+    </div>
+    <div class="p-4 border-t border-gray-700">
+      <button @click="toggleTheme" class="flex items-center w-full px-4 py-2 text-gray-300 hover:bg-gray-800/50 rounded transition">
+        <i class="fas" :class="isDark ? 'fa-sun' : 'fa-moon'"></i>
+        <span x-show="!sidebarCollapsed" class="ml-3" x-text="isDark ? 'Light mode' : 'Dark mode'"></span>
+      </button>
+      <button @click="logout" class="flex items-center w-full px-4 py-2 mt-2 text-red-400 hover:bg-red-900/30 rounded transition">
+        <i class="fas fa-sign-out-alt"></i>
+        <span x-show="!sidebarCollapsed" class="ml-3">Logout</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="flex-1 overflow-y-auto p-6 md:p-8">
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold text-[#d4a373]"><i class="fas fa-cog mr-2"></i> Settings</h1>
+      <p class="text-[var(--text-secondary)]">Manage your account and preferences</p>
+    </div>
+
+    <div class="grid md:grid-cols-2 gap-6">
+      <!-- Change Password Card -->
+      <div class="card p-6">
+        <h2 class="text-xl font-semibold mb-4"><i class="fas fa-key mr-2"></i> Change Password</h2>
+        <form @submit.prevent="changePassword">
+          <div class="mb-4">
+            <label class="block text-sm font-medium mb-1">Current Password</label>
+            <input type="password" x-model="currentPassword" class="w-full border border-[var(--border)] rounded-lg p-2 bg-[var(--bg-primary)]" required>
+          </div>
+          <div class="mb-4">
+            <label class="block text-sm font-medium mb-1">New Password</label>
+            <input type="password" x-model="newPassword" class="w-full border border-[var(--border)] rounded-lg p-2 bg-[var(--bg-primary)]" required>
+          </div>
+          <div class="mb-4">
+            <label class="block text-sm font-medium mb-1">Confirm Password</label>
+            <input type="password" x-model="confirmPassword" class="w-full border border-[var(--border)] rounded-lg p-2 bg-[var(--bg-primary)]" required>
+          </div>
+          <button type="submit" class="btn-primary w-full">Update Password</button>
+          <p x-show="passwordMessage" x-text="passwordMessage" class="text-sm mt-2" :class="passwordError ? 'text-red-500' : 'text-green-500'"></p>
+        </form>
+      </div>
+
+      <!-- API Key Card -->
+      <div class="card p-6">
+        <h2 class="text-xl font-semibold mb-4"><i class="fas fa-code mr-2"></i> API Key</h2>
+        <p class="text-sm text-[var(--text-secondary)] mb-3">Use this key to authenticate API requests.</p>
+        <div class="flex gap-2">
+          <input type="text" x-model="apiKey" readonly class="flex-1 bg-gray-100 dark:bg-gray-800 border border-[var(--border)] rounded-lg p-2 font-mono text-sm">
+          <button @click="copyApiKey" class="bg-gray-200 dark:bg-gray-700 px-3 rounded-lg hover:bg-gray-300"><i class="fas fa-copy"></i></button>
+        </div>
+        <p class="text-xs text-gray-500 mt-2">Keep this key secret. Regenerate if compromised.</p>
+        <button @click="regenerateApiKey" class="mt-4 text-red-500 text-sm hover:underline">Regenerate API Key</button>
+      </div>
+
+      <!-- Integrations Card -->
+      <div class="card p-6 md:col-span-2">
+        <h2 class="text-xl font-semibold mb-4"><i class="fas fa-plug mr-2"></i> Integrations</h2>
+        <p class="text-sm text-[var(--text-secondary)] mb-6">Connect your external tools to export requirements and documentation.</p>
+        <div class="grid md:grid-cols-2 gap-8">
+          <!-- Jira -->
+          <div class="p-4 bg-blue-50/50 dark:bg-blue-900/10 rounded-xl border border-blue-100 dark:border-blue-900/30">
+            <h3 class="font-bold text-[#d4a373] mb-4 flex items-center"><i class="fab fa-jira mr-2 text-blue-500"></i> Jira Connection</h3>
+            <div class="space-y-4">
+              <div>
+                <label class="block text-xs font-semibold uppercase text-gray-500 mb-1">Base URL</label>
+                <input type="text" x-model="integrationSettings.jira_base_url" placeholder="https://your-domain.atlassian.net" class="w-full border border-[var(--border)] rounded-lg p-2 bg-[var(--bg-primary)]">
+              </div>
+              <div>
+                <label class="block text-xs font-semibold uppercase text-gray-500 mb-1">Email</label>
+                <input type="email" x-model="integrationSettings.jira_email" placeholder="user@example.com" class="w-full border border-[var(--border)] rounded-lg p-2 bg-[var(--bg-primary)]">
+              </div>
+              <div>
+                <label class="block text-xs font-semibold uppercase text-gray-500 mb-1">API Token</label>
+                <input type="password" x-model="integrationSettings.jira_api_token" placeholder="Enter API token..." class="w-full border border-[var(--border)] rounded-lg p-2 bg-[var(--bg-primary)]">
+              </div>
+            </div>
+          </div>
+          <!-- GitHub -->
+          <div class="p-4 bg-gray-50/50 dark:bg-gray-800/10 rounded-xl border border-gray-200 dark:border-gray-700/30">
+            <h3 class="font-bold text-[#d4a373] mb-4 flex items-center"><i class="fab fa-github mr-2 text-gray-800 dark:text-white"></i> GitHub Connection</h3>
+            <div class="space-y-4">
+              <div>
+                <label class="block text-xs font-semibold uppercase text-gray-500 mb-1">Personal Access Token</label>
+                <input type="password" x-model="integrationSettings.github_token" placeholder="ghp_..." class="w-full border border-[var(--border)] rounded-lg p-2 bg-[var(--bg-primary)]">
+              </div>
+              <div>
+                <label class="block text-xs font-semibold uppercase text-gray-500 mb-1">GitHub Username/Org</label>
+                <input type="text" x-model="integrationSettings.github_username" placeholder="username" class="w-full border border-[var(--border)] rounded-lg p-2 bg-[var(--bg-primary)]">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="mt-8 pt-6 border-t border-[var(--border)] flex items-center">
+          <button @click="saveIntegrations" class="btn-primary px-10 flex items-center gap-2">
+            <i class="fas fa-save"></i> Save Integrations
+          </button>
+          <span x-show="saveSuccess" x-transition class="ml-4 text-green-500 font-medium flex items-center gap-1">
+            <i class="fas fa-check-circle"></i> Changes saved successfully!
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function settings() {
+    return {
+      sidebarCollapsed: false,
+      isDark: false,
+      currentPassword: '',
+      newPassword: '',
+      confirmPassword: '',
+      passwordMessage: '',
+      passwordError: false,
+      apiKey: '',
+      integrationSettings: {
+        jira_base_url: '',
+        jira_email: '',
+        jira_api_token: '',
+        github_token: '',
+        github_username: '',
+        slack_webhook_url: ''
+      },
+      saveSuccess: false,
+      async init() {
+        this.isDark = localStorage.getItem('theme') === 'dark';
+        if (this.isDark) document.documentElement.classList.add('dark');
+        await this.loadApiKey();
+        await this.loadSettings();
+      },
+      async loadSettings() {
+        try {
+          const settings = await window.api.getSettings();
+          this.integrationSettings = { ...this.integrationSettings, ...settings };
+        } catch(e) { console.error('Failed to load settings', e); }
+      },
+      async saveIntegrations() {
+        try {
+          await window.api.updateSettings(this.integrationSettings);
+          this.saveSuccess = true;
+          setTimeout(() => { this.saveSuccess = false; }, 3000);
+        } catch(e) { alert('Failed to save settings: ' + e.message); }
+      },
+      toggleTheme() {
+        this.isDark = !this.isDark;
+        if (this.isDark) document.documentElement.classList.add('dark');
+        else document.documentElement.classList.remove('dark');
+        localStorage.setItem('theme', this.isDark ? 'dark' : 'light');
+      },
+      async loadApiKey() {
+        // Endpoint to get API key – assuming you have /api/auth/api-key endpoint
+        try {
+          const res = await window.api.getCurrentUser(); // user object should contain api_key
+          this.apiKey = res.api_key || 'Not available';
+        } catch(e) {
+          this.apiKey = 'Unable to load';
+        }
+      },
+      async changePassword() {
+        if (this.newPassword !== this.confirmPassword) {
+          this.passwordMessage = 'New passwords do not match';
+          this.passwordError = true;
+          return;
+        }
+        try {
+          await window.api.updateProfile({ password: this.newPassword, current_password: this.currentPassword });
+          this.passwordMessage = 'Password changed successfully';
+          this.passwordError = false;
+          this.currentPassword = '';
+          this.newPassword = '';
+          this.confirmPassword = '';
+        } catch(e) {
+          this.passwordMessage = e.message || 'Failed to change password';
+          this.passwordError = true;
+        }
+      },
+      copyApiKey() {
+        navigator.clipboard.writeText(this.apiKey);
+        alert('API key copied to clipboard');
+      },
+      async regenerateApiKey() {
+        if (confirm('Regenerating API key will invalidate the old one. Continue?')) {
+          // Implement API call to regenerate – you may need to add this endpoint.
+          // For now, show a message.
+          alert('Regeneration not yet implemented. Please contact support.');
+        }
+      },
+      logout() {
+        window.api.logout();
+      }
+    }
+  }
+</script>
+</body>
+</html>

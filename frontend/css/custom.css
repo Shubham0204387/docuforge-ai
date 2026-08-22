@@ -1,0 +1,116 @@
+/* css/custom.css */
+@import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap');
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  transition: background-color 0.3s ease, color 0.2s ease;
+}
+
+/* Light theme (default) */
+:root {
+  --bg-primary: #f9fafb;
+  --bg-secondary: #ffffff;
+  --bg-card: #ffffff;
+  --text-primary: #111827;
+  --text-secondary: #4b5563;
+  --border: #e5e7eb;
+  --sidebar-bg: #ffffff;
+  --navbar-bg: #ffffff;
+  --accent: #d4a373;
+  --accent-dark: #c2925e;
+  --accent-light: #fef3e2;
+  --danger: #dc2626;
+  --success: #10b981;
+  --warning: #f59e0b;
+}
+
+/* Dark theme */
+body.dark {
+  --bg-primary: #111827;
+  --bg-secondary: #1f2937;
+  --bg-card: #1f2937;
+  --text-primary: #f9fafb;
+  --text-secondary: #9ca3af;
+  --border: #374151;
+  --sidebar-bg: #1f2937;
+  --navbar-bg: #1f2937;
+  --accent-light: #2d1b13;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--border);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--accent);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-dark);
+}
+
+/* Transitions */
+.fade-enter-active, .fade-leave-active { transition: opacity 0.2s; }
+.fade-enter, .fade-leave-to { opacity: 0; }
+
+/* Sidebar */
+.sidebar {
+  background-color: var(--sidebar-bg);
+  border-right: 1px solid var(--border);
+  transition: width 0.3s ease;
+  overflow-x: hidden;
+  z-index: 40;
+}
+.sidebar-collapsed {
+  width: 80px;
+}
+.sidebar-expanded {
+  width: 260px;
+}
+
+/* Cards */
+.card {
+  background-color: var(--bg-card);
+  border-radius: 1rem;
+  border: 1px solid var(--border);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 20px -12px rgba(0,0,0,0.2);
+}
+
+/* Buttons */
+.btn-primary {
+  background-color: var(--accent);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+.btn-primary:hover {
+  background-color: var(--accent-dark);
+  transform: translateY(-1px);
+}
+.btn-secondary {
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+}

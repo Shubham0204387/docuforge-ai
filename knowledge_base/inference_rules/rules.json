@@ -1,0 +1,64 @@
+{
+  "version": "1.0",
+  "rules": [
+    {
+      "id": "INF-001",
+      "name": "Payment implies PCI-DSS",
+      "if_contains": ["payment", "pay", "credit card", "debit card", "checkout"],
+      "then_add": [
+        "The system shall comply with PCI-DSS requirements for payment processing",
+        "The system shall encrypt payment data in transit using TLS 1.2 or higher",
+        "The system shall not store CVV numbers after authorization"
+      ],
+      "confidence": 0.95,
+      "domain": "ecommerce"
+    },
+    {
+      "id": "INF-002",
+      "name": "User data implies GDPR",
+      "if_contains": ["user data", "personal information", "profile", "account"],
+      "then_add": [
+        "The system shall comply with GDPR data protection requirements",
+        "The system shall provide data export functionality",
+        "The system shall support account deletion and data erasure"
+      ],
+      "confidence": 0.9,
+      "domain": "general"
+    },
+    {
+      "id": "INF-003",
+      "name": "Real-time tracking implies location",
+      "if_contains": ["real-time", "tracking", "gps", "location"],
+      "then_add": [
+        "The system shall request location permissions from users",
+        "The system shall handle GPS signal loss gracefully",
+        "The system shall optimize battery usage for location updates"
+      ],
+      "confidence": 0.85,
+      "domain": "ecommerce"
+    },
+    {
+      "id": "INF-004",
+      "name": "Mobile app implies push notifications",
+      "if_contains": ["mobile app", "ios", "android", "app"],
+      "then_add": [
+        "The system shall support push notifications for order updates",
+        "The system shall handle offline mode gracefully"
+      ],
+      "confidence": 0.8,
+      "domain": "general"
+    },
+    {
+      "id": "INF-005",
+      "name": "Authentication implies security",
+      "if_contains": ["login", "sign in", "authentication", "auth"],
+      "then_add": [
+        "The system shall implement rate limiting for login attempts",
+        "The system shall support password reset functionality",
+        "The system shall log all authentication attempts"
+      ],
+      "confidence": 0.9,
+      "domain": "general"
+    }
+  ]
+}

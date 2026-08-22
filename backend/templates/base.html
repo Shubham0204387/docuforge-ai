@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }} — DocuForge AI</title>
+    <style>
+        /* ── Google Fonts ── */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap');
+
+        /* ── Reset & Variables ── */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+            --primary: #1a3a5c;
+            --accent:  #2980b9;
+            --accent2: #e67e22;
+            --bg:      #ffffff;
+            --bg-alt:  #f4f6f8;
+            --border:  #dde1e7;
+            --text:    #212529;
+            --text-muted: #6c757d;
+            --success: #27ae60;
+            --warning: #e67e22;
+            --danger:  #c0392b;
+            --info:    #2980b9;
+            --must-bg: #c0392b; --should-bg: #e67e22; --could-bg: #27ae60; --wont-bg: #7f8c8d;
+        }
+
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            font-size: 10.5pt;
+            line-height: 1.65;
+            color: var(--text);
+            background: var(--bg);
+            padding: 0;
+            margin: 0;
+        }
+
+        /* ── Cover Page ── */
+        .cover-page {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(160deg, #1a3a5c 0%, #2c5f8a 50%, #1a3a5c 100%);
+            color: white;
+            text-align: center;
+            padding: 60px 40px;
+            page-break-after: always;
+        }
+        .cover-logo { font-size: 20pt; font-weight: 700; letter-spacing: 2px; margin-bottom: 60px; opacity: 0.9; }
+        .cover-logo span { color: #f39c12; }
+        .cover-title { font-size: 30pt; font-weight: 700; line-height: 1.2; margin-bottom: 16px; }
+        .cover-subtitle { font-size: 14pt; font-weight: 300; opacity: 0.85; margin-bottom: 48px; }
+        .cover-meta { display: flex; flex-wrap: wrap; justify-content: center; gap: 40px; margin-top: 30px; }
+        .cover-meta-item { text-align: center; }
+        .cover-meta-item .label { font-size: 8pt; text-transform: uppercase; letter-spacing: 1px; opacity: 0.6; margin-bottom: 4px; }
+        .cover-meta-item .value { font-size: 11pt; font-weight: 600; }
+        .cover-divider { width: 80px; height: 3px; background: #f39c12; margin: 30px auto; border-radius: 2px; }
+
+        /* ── Page Layout ── */
+        .page-content {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 40px 48px 80px;
+        }
+
+        /* ── Document Header ── */
+        .doc-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 0;
+            border-bottom: 2px solid var(--primary);
+            margin-bottom: 32px;
+        }
+        .doc-header .brand { font-size: 9pt; font-weight: 600; color: var(--primary); letter-spacing: 0.5px; }
+        .doc-header .doc-id { font-family: 'Roboto Mono', monospace; font-size: 8.5pt; color: var(--text-muted); }
+
+        /* ── Table of Contents ── */
+        .toc { background: var(--bg-alt); border: 1px solid var(--border); border-radius: 8px; padding: 28px 32px; margin-bottom: 36px; }
+        .toc h2 { font-size: 12pt; color: var(--primary); margin-bottom: 16px; border-bottom: 2px solid var(--accent); padding-bottom: 8px; }
+        .toc ol { padding-left: 20px; }
+        .toc li { padding: 4px 0; font-size: 10pt; }
+        .toc a { color: var(--accent); text-decoration: none; }
+        .toc a:hover { text-decoration: underline; }
+
+        /* ── Revision History ── */
+        .revision-table { width: 100%; border-collapse: collapse; margin-bottom: 32px; }
+        .revision-table th { background: var(--primary); color: white; padding: 10px 14px; text-align: left; font-size: 9.5pt; }
+        .revision-table td { padding: 9px 14px; border-bottom: 1px solid var(--border); font-size: 9.5pt; }
+        .revision-table tr:nth-child(even) td { background: var(--bg-alt); }
+
+        /* ── Headings ── */
+        h1.doc-title { font-size: 22pt; font-weight: 700; color: var(--primary); margin-bottom: 8px; }
+        h2 { font-size: 14pt; font-weight: 600; color: var(--primary); margin: 36px 0 14px;
+             padding-left: 14px; border-left: 4px solid var(--accent); page-break-after: avoid; }
+        h3 { font-size: 11.5pt; font-weight: 600; color: #2c3e50; margin: 24px 0 10px; page-break-after: avoid; }
+        h4 { font-size: 10.5pt; font-weight: 600; color: #2c3e50; margin: 18px 0 8px; }
+
+        /* ── Paragraphs ── */
+        p { margin-bottom: 12px; }
+        ul, ol { padding-left: 22px; margin-bottom: 12px; }
+        li { margin-bottom: 5px; }
+
+        /* ── Tables ── */
+        table { border-collapse: collapse; width: 100%; margin: 16px 0 24px; font-size: 9.5pt; }
+        th { background: var(--primary); color: white; padding: 10px 14px; text-align: left;
+             font-weight: 600; letter-spacing: 0.3px; }
+        td { padding: 9px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+        tr:nth-child(even) td { background: var(--bg-alt); }
+        tr:hover td { background: #e8f4f8; }
+        table caption { font-size: 9pt; color: var(--text-muted); margin-bottom: 6px; text-align: left; font-style: italic; }
+
+        /* ── Priority Badges ── */
+        .badge { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 8pt;
+                 font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase; }
+        .badge-must    { background: var(--must-bg);   color: white; }
+        .badge-should  { background: var(--should-bg); color: white; }
+        .badge-could   { background: var(--could-bg);  color: white; }
+        .badge-wont    { background: var(--wont-bg);   color: white; }
+        .badge-high    { background: var(--danger);    color: white; }
+        .badge-medium  { background: var(--warning);   color: white; }
+        .badge-low     { background: var(--success);   color: white; }
+        .badge-pass    { background: var(--success);   color: white; }
+        .badge-fail    { background: var(--danger);    color: white; }
+        .badge-pending { background: var(--info);      color: white; }
+
+        /* ── Callout Boxes ── */
+        .callout { padding: 14px 18px; border-radius: 6px; margin: 16px 0; border-left: 5px solid; }
+        .callout-info    { background: #eaf4fb; border-color: var(--info);    color: #1a5276; }
+        .callout-warning { background: #fef9e7; border-color: var(--warning); color: #784212; }
+        .callout-danger  { background: #fdedec; border-color: var(--danger);  color: #7b241c; }
+        .callout-success { background: #eafaf1; border-color: var(--success); color: #1e5631; }
+
+        /* ── Code / Mono ── */
+        code { font-family: 'Roboto Mono', monospace; font-size: 8.5pt; background: #f0f0f0;
+               padding: 1px 5px; border-radius: 3px; }
+        pre { font-family: 'Roboto Mono', monospace; font-size: 8.5pt; background: #1e2d3d;
+              color: #e8e8e8; padding: 16px 20px; border-radius: 8px; overflow-x: auto; margin: 14px 0; }
+
+        /* ── Metric Cards ── */
+        .metric-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px; margin: 20px 0; }
+        .metric-card { background: var(--bg-alt); border: 1px solid var(--border); border-radius: 8px;
+                       padding: 18px; text-align: center; }
+        .metric-card .metric-value { font-size: 28pt; font-weight: 700; color: var(--primary); line-height: 1; }
+        .metric-card .metric-label { font-size: 9pt; color: var(--text-muted); margin-top: 6px; }
+        .metric-card .metric-sub   { font-size: 8pt; color: var(--text-muted); margin-top: 2px; }
+
+        /* ── Section info blocks ── */
+        .section-intro { background: linear-gradient(135deg, #e8f4fd, #f0f7ff); border-radius: 8px;
+                         padding: 16px 20px; margin-bottom: 20px; border: 1px solid #c5ddf0; }
+
+        /* ── Signatures ── */
+        .signature-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 32px; }
+        .signature-box { border: 1px solid var(--border); border-radius: 8px; padding: 20px; text-align: center; }
+        .signature-line { border-top: 1px solid #999; margin: 40px 0 8px; }
+        .signature-label { font-size: 9pt; color: var(--text-muted); }
+        .signature-name  { font-weight: 600; margin-bottom: 4px; }
+
+        /* ── Footer ── */
+        .doc-footer { margin-top: 64px; padding-top: 18px; border-top: 2px solid var(--border);
+                      display: flex; justify-content: space-between; align-items: center;
+                      font-size: 8.5pt; color: var(--text-muted); }
+        .doc-footer .brand-tag { font-weight: 600; color: var(--primary); }
+
+        /* ── Print / PDF ── */
+        @media print {
+            .cover-page { page-break-after: always; min-height: unset; height: 100vh; }
+            h2 { page-break-before: auto; }
+            table { page-break-inside: avoid; }
+            .toc { page-break-after: always; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ── Cover Page ── -->
+<div class="cover-page">
+    <div class="cover-logo">Docu<span>Forge</span> AI</div>
+    <div class="cover-divider"></div>
+    <div class="cover-title">{{ title }}</div>
+    <div class="cover-subtitle">{{ subtitle | default("AI-Powered Requirements Engineering Platform") }}</div>
+    <div class="cover-divider"></div>
+    <div class="cover-meta">
+        <div class="cover-meta-item">
+            <div class="label">Project</div>
+            <div class="value">{{ project_name }}</div>
+        </div>
+        <div class="cover-meta-item">
+            <div class="label">Project ID</div>
+            <div class="value">{{ project_id }}</div>
+        </div>
+        <div class="cover-meta-item">
+            <div class="label">Domain</div>
+            <div class="value">{{ domain | default("General") | title }}</div>
+        </div>
+        <div class="cover-meta-item">
+            <div class="label">Generated</div>
+            <div class="value">{{ date }}</div>
+        </div>
+        <div class="cover-meta-item">
+            <div class="label">Version</div>
+            <div class="value">1.0</div>
+        </div>
+    </div>
+</div>
+
+<!-- ── Main Content ── -->
+<div class="page-content">
+    <div class="doc-header">
+        <div class="brand">DocuForge AI — Intelligent Requirements Engineering</div>
+        <div class="doc-id">{{ project_id }} · {{ date }}</div>
+    </div>
+
+    {% block content %}{% endblock %}
+
+    <div class="doc-footer">
+        <div>Confidential — {{ project_name }} ({{ project_id }})</div>
+        <div class="brand-tag">Generated by DocuForge AI</div>
+        <div>{{ date }}</div>
+    </div>
+</div>
+
+</body>
+</html>

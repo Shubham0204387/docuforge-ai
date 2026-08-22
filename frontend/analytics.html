@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analytics – DocuForge AI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <script src="js/app.js"></script>
+  <style>
+    :root {
+      --bg-primary: #fefcf8;
+      --bg-secondary: #ffffff;
+      --text-primary: #1a110b;
+      --text-secondary: #4b5563;
+      --border: #e5e7eb;
+      --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+    }
+    .dark {
+      --bg-primary: #111827;
+      --bg-secondary: #1f2937;
+      --text-primary: #f3f4f6;
+      --text-secondary: #9ca3af;
+      --border: #374151;
+      --card-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+    }
+    body {
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      transition: background-color 0.3s;
+    }
+    .sidebar-expanded { width: 260px; }
+    .sidebar-collapsed { width: 80px; }
+    .sidebar {
+      transition: width 0.3s ease;
+      background: linear-gradient(135deg, #2d1b13 0%, #1a0f0a 100%);
+      color: #e5e7eb;
+    }
+    .card {
+      background-color: var(--bg-secondary);
+      border-radius: 1rem;
+      box-shadow: var(--card-shadow);
+      border: 1px solid var(--border);
+    }
+    .stat-card {
+      background: linear-gradient(135deg, #d4a37320 0%, #c2925e10 100%);
+      backdrop-filter: blur(4px);
+    }
+  </style>
+</head>
+<body x-data="analytics()" x-init="init()">
+<div class="flex h-screen overflow-hidden">
+  <!-- Sidebar (same as dashboard) -->
+  <div class="sidebar flex flex-col justify-between" :class="sidebarCollapsed ? 'sidebar-collapsed' : 'sidebar-expanded'">
+    <div>
+      <div class="p-4 flex items-center justify-between border-b border-gray-700">
+        <div x-show="!sidebarCollapsed" class="flex items-center gap-2 text-xl font-bold text-[#d4a373]">
+          <i class="fas fa-robot"></i> DocuForge
+        </div>
+        <button @click="sidebarCollapsed = !sidebarCollapsed" class="text-gray-400 hover:text-[#d4a373] transition">
+          <i class="fas" :class="sidebarCollapsed ? 'fa-chevron-right' : 'fa-chevron-left'"></i>
+        </button>
+      </div>
+      <nav class="mt-6 space-y-1">
+        <a href="dashboard.html" class="flex items-center px-4 py-2.5 text-gray-400 hover:text-white hover:bg-gray-800/50 transition">
+          <i class="fas fa-tachometer-alt w-5"></i><span x-show="!sidebarCollapsed" class="ml-3">Dashboard</span>
+        </a>
+        <a href="dashboard.html" class="flex items-center px-4 py-2.5 text-gray-400 hover:text-white hover:bg-gray-800/50 transition">
+          <i class="fas fa-project-diagram w-5"></i><span x-show="!sidebarCollapsed" class="ml-3">Projects</span>
+        </a>
+        <a href="analytics.html" class="flex items-center px-4 py-2.5 text-gray-300 bg-[#d4a37320] border-l-4 border-[#d4a373]">
+          <i class="fas fa-chart-line w-5"></i><span x-show="!sidebarCollapsed" class="ml-3">Analytics</span>
+        </a>
+        <a href="settings.html" class="flex items-center px-4 py-2.5 text-gray-400 hover:text-white hover:bg-gray-800/50 transition">
+          <i class="fas fa-cog w-5"></i><span x-show="!sidebarCollapsed" class="ml-3">Settings</span>
+        </a>
+      </nav>
+    </div>
+    <div class="p-4 border-t border-gray-700">
+      <button @click="toggleTheme" class="flex items-center w-full px-4 py-2 text-gray-300 hover:bg-gray-800/50 rounded transition">
+        <i class="fas" :class="isDark ? 'fa-sun' : 'fa-moon'"></i>
+        <span x-show="!sidebarCollapsed" class="ml-3" x-text="isDark ? 'Light mode' : 'Dark mode'"></span>
+      </button>
+      <button @click="logout" class="flex items-center w-full px-4 py-2 mt-2 text-red-400 hover:bg-red-900/30 rounded transition">
+        <i class="fas fa-sign-out-alt"></i>
+        <span x-show="!sidebarCollapsed" class="ml-3">Logout</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="flex-1 overflow-y-auto p-6 md:p-8">
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold text-[#d4a373]"><i class="fas fa-chart-line mr-2"></i> Analytics Dashboard</h1>
+      <p class="text-[var(--text-secondary)]">Overview of all your projects</p>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
+      <div class="stat-card card p-5">
+        <div class="flex items-center justify-between">
+          <div><p class="text-sm text-[var(--text-secondary)]">Total Projects</p><p class="text-3xl font-bold" x-text="totalProjects">0</p></div>
+          <i class="fas fa-folder-open text-4xl text-[#d4a373] opacity-70"></i>
+        </div>
+      </div>
+      <div class="stat-card card p-5">
+        <div class="flex items-center justify-between">
+          <div><p class="text-sm text-[var(--text-secondary)]">Total Requirements</p><p class="text-3xl font-bold" x-text="totalRequirements">0</p></div>
+          <i class="fas fa-list-check text-4xl text-[#d4a373] opacity-70"></i>
+        </div>
+      </div>
+      <div class="stat-card card p-5">
+        <div class="flex items-center justify-between">
+          <div><p class="text-sm text-[var(--text-secondary)]">Average RQI</p><p class="text-3xl font-bold" x-text="avgRQI">0</p></div>
+          <i class="fas fa-chart-simple text-4xl text-[#d4a373] opacity-70"></i>
+        </div>
+      </div>
+      <div class="stat-card card p-5">
+        <div class="flex items-center justify-between">
+          <div><p class="text-sm text-[var(--text-secondary)]">Total Conflicts</p><p class="text-3xl font-bold" x-text="totalConflicts">0</p></div>
+          <i class="fas fa-exclamation-triangle text-4xl text-[#d4a373] opacity-70"></i>
+        </div>
+      </div>
+    </div>
+
+    <!-- Projects with progress -->
+    <div class="card p-5">
+      <h2 class="text-xl font-semibold mb-4"><i class="fas fa-project-diagram mr-2"></i> Projects Overview</h2>
+      <div class="space-y-4">
+        <template x-for="proj in projects" :key="proj.id">
+          <div>
+            <div class="flex justify-between text-sm">
+              <span x-text="proj.name"></span>
+              <span x-text="proj.requirements_count + ' requirements'"></span>
+            </div>
+            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 mt-1">
+              <div class="bg-[#d4a373] h-2 rounded-full" :style="'width: ' + (proj.requirements_count ? Math.min(100, (proj.requirements_count / 50) * 100) : 0) + '%'"></div>
+            </div>
+          </div>
+        </template>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function analytics() {
+    return {
+      sidebarCollapsed: false,
+      isDark: false,
+      projects: [],
+      totalProjects: 0,
+      totalRequirements: 0,
+      avgRQI: 0,
+      totalConflicts: 0,
+      async init() {
+        this.isDark = localStorage.getItem('theme') === 'dark';
+        if (this.isDark) document.documentElement.classList.add('dark');
+        await this.loadData();
+      },
+      toggleTheme() {
+        this.isDark = !this.isDark;
+        if (this.isDark) document.documentElement.classList.add('dark');
+        else document.documentElement.classList.remove('dark');
+        localStorage.setItem('theme', this.isDark ? 'dark' : 'light');
+      },
+      async loadData() {
+        this.projects = await window.api.getProjects();
+        this.totalProjects = this.projects.length;
+        let reqCount = 0;
+        let rqiSum = 0;
+        let conflictCount = 0;
+        for (let p of this.projects) {
+          reqCount += p.requirements_count || 0;
+          // Fetch quality and conflicts for each project (parallel)
+          try {
+            const quality = await window.api.getProjectQuality(p.id);
+            rqiSum += quality.average_rqi || 0;
+            const conflicts = await window.api.getProjectConflicts(p.id);
+            conflictCount += conflicts.length;
+          } catch(e) {}
+        }
+        this.totalRequirements = reqCount;
+        this.avgRQI = this.projects.length ? Math.round(rqiSum / this.projects.length) : 0;
+        this.totalConflicts = conflictCount;
+      },
+      logout() {
+        window.api.logout();
+      }
+    }
+  }
+</script>
+</body>
+</html>

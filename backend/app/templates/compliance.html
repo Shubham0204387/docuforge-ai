@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>1. Applicable Regulations</h2>
+<ul>
+    {% for reg in regulations %}
+    <li><strong>{{ reg.name }}</strong> – {{ reg.description }}</li>
+    {% endfor %}
+</ul>
+
+<h2>2. GDPR Checklist</h2>
+<ul>
+    <li>☐ Data Protection Impact Assessment (DPIA) conducted</li>
+    <li>☐ User consent mechanism implemented</li>
+    <li>☐ Data portability (export) feature available</li>
+    <li>☐ Right to be forgotten (account deletion) supported</li>
+</ul>
+
+<h2>3. PCI‑DSS Requirements</h2>
+<ul>
+    <li>☐ Cardholder data encrypted in transit (TLS 1.2+)</li>
+    <li>☐ No storage of CVV or track data</li>
+    <li>☐ Regular vulnerability scans</li>
+</ul>
+{% endblock %}

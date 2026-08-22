@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>1. Test Strategy</h2>
+<p>The testing will follow a risk‑based approach, focusing on high‑priority and high‑complexity requirements.</p>
+
+<h2>2. Test Cases</h2>
+<table>
+    <thead><tr><th>Test ID</th><th>Requirement ID</th><th>Description</th><th>Preconditions</th><th>Expected Result</th></tr></thead>
+    <tbody>
+    {% for test in test_cases %}
+    <tr>
+        <td>{{ test.id }}</td>
+        <td>{{ test.req_id }}</td>
+        <td>{{ test.description }}</td>
+        <td>{{ test.preconditions }}</td>
+        <td>{{ test.expected }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<h2>3. Test Resources</h2>
+<p>Environments: Development, Staging, Production.</p>
+<p>Tools: pytest, Selenium (if web), Postman (API).</p>
+{% endblock %}

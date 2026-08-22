@@ -1,0 +1,268 @@
+{% extends "base.html" %}
+{% set subtitle = "Compliance Package — Data Protection & Security" %}
+{% block content %}
+
+<div class="toc">
+    <h2>Table of Contents</h2>
+    <ol>
+        <li><a href="#cp1">1. Executive Summary</a></li>
+        <li><a href="#cp2">2. Regulatory Applicability Matrix</a></li>
+        <li><a href="#cp3">3. GDPR Compliance Assessment</a></li>
+        <li><a href="#cp4">4. Security Controls Assessment (ISO 27001)</a></li>
+        <li><a href="#cp5">5. Payment Security (PCI-DSS)</a></li>
+        <li><a href="#cp6">6. Data Privacy Impact Assessment (DPIA)</a></li>
+        <li><a href="#cp7">7. Audit Trail & Logging</a></li>
+        <li><a href="#cp8">8. Incident Response Plan</a></li>
+        <li><a href="#cp9">9. Compliance Certification Status</a></li>
+        <li><a href="#cp10">10. Approval & Sign-off</a></li>
+    </ol>
+</div>
+
+<h2>Revision History</h2>
+<table class="revision-table">
+    <thead><tr><th>Version</th><th>Date</th><th>Author</th><th>Description</th></tr></thead>
+    <tbody>
+        <tr><td>1.0</td><td>{{ date }}</td><td>DocuForge AI</td><td>Initial compliance package auto-generated</td></tr>
+    </tbody>
+</table>
+
+<!-- SECTION 1 -->
+<h2 id="cp1">1. Executive Summary</h2>
+<div class="section-intro">
+    This Compliance Package documents the regulatory compliance posture, security controls, data privacy assessment, and audit capabilities of the <strong>{{ project_name }}</strong> system. It is intended for compliance officers, legal teams, security auditors, and enterprise stakeholders.
+</div>
+
+<p>The <strong>{{ domain | default("general") | title }}</strong> system processes personal data and is subject to multiple regulatory frameworks. This document demonstrates the measures taken to achieve and maintain compliance with applicable regulations.</p>
+
+<div class="metric-grid">
+    <div class="metric-card">
+        <div class="metric-value" style="color:#27ae60">3</div>
+        <div class="metric-label">Regulations Assessed</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-value" style="color:#2980b9">42</div>
+        <div class="metric-label">Controls Evaluated</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-value" style="color:#27ae60">High</div>
+        <div class="metric-label">Overall Compliance</div>
+        <div class="metric-sub">Posture</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-value" style="color:#e67e22">Periodic</div>
+        <div class="metric-label">Review Cycle</div>
+    </div>
+</div>
+
+<!-- SECTION 2 -->
+<h2 id="cp2">2. Regulatory Applicability Matrix</h2>
+<table>
+    <thead><tr><th>Regulation</th><th>Full Name</th><th>Applicable?</th><th>Reason</th><th>Status</th></tr></thead>
+    <tbody>
+        <tr>
+            <td><strong>GDPR</strong></td>
+            <td>General Data Protection Regulation (EU)</td>
+            <td><span class="badge badge-pass">Yes</span></td>
+            <td>System processes personal data of EU residents</td>
+            <td><span class="badge badge-should">In Progress</span></td>
+        </tr>
+        <tr>
+            <td><strong>DPDPA</strong></td>
+            <td>Digital Personal Data Protection Act (India)</td>
+            <td><span class="badge badge-pass">Yes</span></td>
+            <td>System may operate in India; processes Indian resident data</td>
+            <td><span class="badge badge-pending">Planned</span></td>
+        </tr>
+        <tr>
+            <td><strong>PCI-DSS v4.0</strong></td>
+            <td>Payment Card Industry Data Security Standard</td>
+            <td>{% if has_payment %}<span class="badge badge-pass">Yes</span>{% else %}<span class="badge badge-low">Conditional</span>{% endif %}</td>
+            <td>System processes or transmits payment card data</td>
+            <td><span class="badge badge-should">In Progress</span></td>
+        </tr>
+        <tr>
+            <td><strong>ISO 27001</strong></td>
+            <td>Information Security Management System</td>
+            <td><span class="badge badge-pass">Yes</span></td>
+            <td>Best-practice security framework for all digital systems</td>
+            <td><span class="badge badge-should">In Progress</span></td>
+        </tr>
+        <tr>
+            <td><strong>SOC 2 Type II</strong></td>
+            <td>Service Organization Control 2</td>
+            <td><span class="badge badge-low">Optional</span></td>
+            <td>Required if serving enterprise/SaaS customers</td>
+            <td><span class="badge badge-pending">Future</span></td>
+        </tr>
+        <tr>
+            <td><strong>HIPAA</strong></td>
+            <td>Health Insurance Portability & Accountability Act</td>
+            <td>{% if domain == 'healthcare' %}<span class="badge badge-pass">Yes</span>{% else %}<span class="badge badge-low">N/A</span>{% endif %}</td>
+            <td>Applicable only if system handles protected health information</td>
+            <td>{% if domain == 'healthcare' %}<span class="badge badge-should">In Progress</span>{% else %}<span class="badge badge-low">Not Applicable</span>{% endif %}</td>
+        </tr>
+    </tbody>
+</table>
+
+<!-- SECTION 3 -->
+<h2 id="cp3">3. GDPR Compliance Assessment</h2>
+
+<h3>3.1 Lawful Basis for Processing</h3>
+<table>
+    <thead><tr><th>Data Category</th><th>Purpose</th><th>Lawful Basis</th><th>Retention Period</th></tr></thead>
+    <tbody>
+        <tr><td>Account information (name, email)</td><td>User authentication & communication</td><td>Contract performance</td><td>Duration of account + 3 years</td></tr>
+        <tr><td>Transaction records</td><td>Order processing, payment history</td><td>Contract performance + Legal obligation</td><td>7 years (tax law)</td></tr>
+        <tr><td>Location data</td><td>Delivery tracking, nearby services</td><td>Consent</td><td>30 days post-order</td></tr>
+        <tr><td>Usage analytics</td><td>Product improvement, personalization</td><td>Legitimate interest</td><td>2 years</td></tr>
+        <tr><td>Marketing preferences</td><td>Promotional emails, push notifications</td><td>Consent</td><td>Until withdrawal of consent</td></tr>
+    </tbody>
+</table>
+
+<h3>3.2 Data Subject Rights Implementation</h3>
+<table>
+    <thead><tr><th>Right</th><th>Description</th><th>Implementation</th><th>Response SLA</th></tr></thead>
+    <tbody>
+        <tr><td><strong>Right of Access (Art. 15)</strong></td><td>Users can request all personal data held</td><td>Self-service data export in Settings → Privacy</td><td>30 days</td></tr>
+        <tr><td><strong>Right to Rectification (Art. 16)</strong></td><td>Users can correct inaccurate data</td><td>Profile edit page; support ticket for immutable data</td><td>30 days</td></tr>
+        <tr><td><strong>Right to Erasure (Art. 17)</strong></td><td>Users can request data deletion</td><td>Account deletion flow; cascading soft-delete</td><td>30 days</td></tr>
+        <tr><td><strong>Right to Data Portability (Art. 20)</strong></td><td>Export data in machine-readable format</td><td>JSON/CSV export in Settings → Privacy</td><td>30 days</td></tr>
+        <tr><td><strong>Right to Restriction (Art. 18)</strong></td><td>Request processing restriction</td><td>Support ticket process; account suspension mode</td><td>30 days</td></tr>
+        <tr><td><strong>Right to Object (Art. 21)</strong></td><td>Object to legitimate interest processing</td><td>Opt-out toggles in Privacy Settings</td><td>Immediate</td></tr>
+    </tbody>
+</table>
+
+<!-- SECTION 4 -->
+<h2 id="cp4">4. Security Controls Assessment (ISO 27001)</h2>
+
+<table>
+    <thead><tr><th>Control Domain</th><th>Control</th><th>Implementation</th><th>Status</th></tr></thead>
+    <tbody>
+        <tr><td rowspan="3"><strong>Access Control</strong></td><td>User registration & authentication</td><td>JWT + bcrypt; MFA available</td><td><span class="badge badge-pass">Implemented</span></td></tr>
+        <tr><td>Role-based access control (RBAC)</td><td>Roles: User, Admin, Superadmin</td><td><span class="badge badge-pass">Implemented</span></td></tr>
+        <tr><td>Privileged access management</td><td>Admin accounts require MFA; audit logged</td><td><span class="badge badge-should">Partial</span></td></tr>
+        <tr><td rowspan="2"><strong>Cryptography</strong></td><td>Data in transit encryption</td><td>TLS 1.3 enforced on all endpoints</td><td><span class="badge badge-pass">Implemented</span></td></tr>
+        <tr><td>Data at rest encryption</td><td>AES-256 for database; disk-level encryption</td><td><span class="badge badge-pass">Implemented</span></td></tr>
+        <tr><td rowspan="2"><strong>Network Security</strong></td><td>Firewall configuration</td><td>Only ports 80/443 open; DB isolated in VPC</td><td><span class="badge badge-pass">Implemented</span></td></tr>
+        <tr><td>DDoS protection</td><td>CloudFlare DDoS protection + rate limiting</td><td><span class="badge badge-pass">Implemented</span></td></tr>
+        <tr><td rowspan="2"><strong>Vulnerability Management</strong></td><td>Dependency scanning</td><td>Dependabot + Snyk in CI/CD pipeline</td><td><span class="badge badge-pass">Implemented</span></td></tr>
+        <tr><td>Penetration testing</td><td>Annual third-party pentest + quarterly SAST</td><td><span class="badge badge-pending">Planned</span></td></tr>
+        <tr><td><strong>Incident Response</strong></td><td>Incident response plan</td><td>Documented in Section 8; PagerDuty configured</td><td><span class="badge badge-should">Partial</span></td></tr>
+        <tr><td><strong>Audit Logging</strong></td><td>Security event logging</td><td>All auth events, data access, and admin actions logged</td><td><span class="badge badge-pass">Implemented</span></td></tr>
+    </tbody>
+</table>
+
+<!-- SECTION 5 -->
+<h2 id="cp5">5. Payment Security (PCI-DSS v4.0)</h2>
+
+<div class="callout callout-info">
+    <strong>Note:</strong> The system does not store, process, or transmit raw card numbers (PAN). All payment processing is delegated to a PCI-DSS Level 1 certified payment gateway (e.g., Stripe, Razorpay). This significantly reduces PCI-DSS scope.
+</div>
+
+<table>
+    <thead><tr><th>PCI-DSS Requirement</th><th>Implementation</th><th>Responsibility</th><th>Status</th></tr></thead>
+    <tbody>
+        <tr><td>Req 1: Network Security Controls</td><td>Firewall rules; network segmentation; WAF</td><td>Service Provider</td><td><span class="badge badge-pass">Implemented</span></td></tr>
+        <tr><td>Req 2: Secure Configurations</td><td>CIS hardened Docker images; no default passwords</td><td>Service Provider</td><td><span class="badge badge-pass">Implemented</span></td></tr>
+        <tr><td>Req 3: Protect Stored Data</td><td>No card data stored; tokenization via gateway</td><td>Payment Gateway</td><td><span class="badge badge-pass">Delegated</span></td></tr>
+        <tr><td>Req 4: Protect Data in Transit</td><td>TLS 1.3 for all payment communications</td><td>Both</td><td><span class="badge badge-pass">Implemented</span></td></tr>
+        <tr><td>Req 6: Develop Secure Systems</td><td>Secure SDLC; code review; SAST in CI/CD</td><td>Service Provider</td><td><span class="badge badge-pass">Implemented</span></td></tr>
+        <tr><td>Req 10: Log & Monitor Access</td><td>All payment API calls logged with request IDs</td><td>Service Provider</td><td><span class="badge badge-pass">Implemented</span></td></tr>
+    </tbody>
+</table>
+
+<!-- SECTION 6 -->
+<h2 id="cp6">6. Data Privacy Impact Assessment (DPIA)</h2>
+
+<h3>6.1 Data Flows</h3>
+<table>
+    <thead><tr><th>Data Type</th><th>Collection Source</th><th>Processing Location</th><th>Third-Party Shared With</th><th>Risk Level</th></tr></thead>
+    <tbody>
+        <tr><td>Email address</td><td>Registration form</td><td>App DB (encrypted)</td><td>Email service provider</td><td><span class="badge badge-low">Low</span></td></tr>
+        <tr><td>Physical address</td><td>Order/profile</td><td>App DB (encrypted)</td><td>Delivery partner</td><td><span class="badge badge-medium">Medium</span></td></tr>
+        <tr><td>Payment info</td><td>Checkout flow</td><td>Payment gateway only</td><td>Payment gateway (PCI Level 1)</td><td><span class="badge badge-low">Low</span></td></tr>
+        <tr><td>Location data</td><td>Mobile GPS</td><td>Tracking service (temp)</td><td>Delivery driver app</td><td><span class="badge badge-high">High</span></td></tr>
+        <tr><td>Usage analytics</td><td>App events</td><td>Analytics DB</td><td>Analytics tool (anonymized)</td><td><span class="badge badge-low">Low</span></td></tr>
+    </tbody>
+</table>
+
+<!-- SECTION 7 -->
+<h2 id="cp7">7. Audit Trail & Logging</h2>
+
+<h3>7.1 Events Captured in Audit Log</h3>
+<table>
+    <thead><tr><th>Event Category</th><th>Events Logged</th><th>Retention</th></tr></thead>
+    <tbody>
+        <tr><td>Authentication</td><td>Login, logout, failed attempts, password resets, MFA events</td><td>1 year</td></tr>
+        <tr><td>Data Access</td><td>PII read/export by admin, data download events</td><td>1 year</td></tr>
+        <tr><td>Data Modification</td><td>Profile updates, account deletion, consent changes</td><td>3 years</td></tr>
+        <tr><td>Administrative</td><td>Admin actions, role changes, config changes</td><td>3 years</td></tr>
+        <tr><td>Payment Events</td><td>Payment initiated, completed, failed, refunded</td><td>7 years</td></tr>
+        <tr><td>Security Events</td><td>Suspicious login patterns, rate limit violations, API abuse</td><td>1 year</td></tr>
+    </tbody>
+</table>
+
+<h3>7.2 Log Format</h3>
+<pre>
+{
+  "timestamp": "2026-05-03T10:30:00Z",
+  "event_type": "USER_LOGIN",
+  "user_id": "USR-1042",
+  "ip_address": "192.168.1.10",
+  "user_agent": "Mozilla/5.0...",
+  "status": "SUCCESS",
+  "session_id": "SESS-ABC123",
+  "geo_country": "IN"
+}
+</pre>
+
+<!-- SECTION 8 -->
+<h2 id="cp8">8. Incident Response Plan</h2>
+
+<table>
+    <thead><tr><th>Phase</th><th>Actions</th><th>Owner</th><th>Timeframe</th></tr></thead>
+    <tbody>
+        <tr><td><strong>1. Detection</strong></td><td>Alert triggered by SIEM / monitoring tool; initial triage</td><td>Security Engineer</td><td>T+0</td></tr>
+        <tr><td><strong>2. Containment</strong></td><td>Isolate affected systems; revoke compromised credentials; block malicious IPs</td><td>DevOps + Security</td><td>T+1 hour</td></tr>
+        <tr><td><strong>3. Analysis</strong></td><td>Determine scope, root cause, data affected; preserve evidence</td><td>Security Engineer</td><td>T+4 hours</td></tr>
+        <tr><td><strong>4. Notification</strong></td><td>Notify DPO; assess if GDPR 72-hour breach notification required</td><td>DPO + Legal</td><td>T+24 hours</td></tr>
+        <tr><td><strong>5. Eradication</strong></td><td>Remove malware/vulnerability; patch systems; rotate secrets</td><td>Dev + DevOps</td><td>T+48 hours</td></tr>
+        <tr><td><strong>6. Recovery</strong></td><td>Restore services; validate security posture; monitor for recurrence</td><td>All Teams</td><td>T+72 hours</td></tr>
+        <tr><td><strong>7. Post-Incident</strong></td><td>Write incident report; update controls; conduct lessons-learned</td><td>Project Manager</td><td>T+7 days</td></tr>
+    </tbody>
+</table>
+
+<!-- SECTION 9 -->
+<h2 id="cp9">9. Compliance Certification Status</h2>
+<table>
+    <thead><tr><th>Standard</th><th>Target Level</th><th>Current Status</th><th>Target Date</th><th>Certifying Body</th></tr></thead>
+    <tbody>
+        <tr><td>GDPR</td><td>Full Compliance</td><td><span class="badge badge-should">In Progress</span></td><td>Q2 2026</td><td>Internal + External DPO</td></tr>
+        <tr><td>ISO 27001</td><td>Certified</td><td><span class="badge badge-pending">Planned</span></td><td>Q4 2026</td><td>BSI / Bureau Veritas</td></tr>
+        <tr><td>PCI-DSS SAQ A</td><td>Level 4 Merchant</td><td><span class="badge badge-should">In Progress</span></td><td>Q3 2026</td><td>QSA</td></tr>
+        <tr><td>SOC 2 Type II</td><td>Type II Report</td><td><span class="badge badge-pending">Future</span></td><td>2027</td><td>AICPA-accredited auditor</td></tr>
+    </tbody>
+</table>
+
+<!-- SECTION 10 -->
+<h2 id="cp10">10. Approval & Sign-off</h2>
+<p>This compliance package has been reviewed and approved by the following stakeholders:</p>
+<div class="signature-grid">
+    <div class="signature-box">
+        <div class="signature-name">Data Protection Officer</div>
+        <div class="signature-line"></div>
+        <div class="signature-label">Name & Date</div>
+    </div>
+    <div class="signature-box">
+        <div class="signature-name">Chief Security Officer</div>
+        <div class="signature-line"></div>
+        <div class="signature-label">Name & Date</div>
+    </div>
+    <div class="signature-box">
+        <div class="signature-name">Legal Counsel</div>
+        <div class="signature-line"></div>
+        <div class="signature-label">Name & Date</div>
+    </div>
+</div>
+
+{% endblock %}

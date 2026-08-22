@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>1. Technology Stack</h2>
+<ul>
+{% for tech in tech_stack %}
+    <li>{{ tech }}</li>
+{% endfor %}
+</ul>
+
+<h2>2. Environment Setup</h2>
+<p>Follow the steps below to set up the development/production environment.</p>
+<ol>
+    <li>Clone repository: <code>git clone ...</code></li>
+    <li>Install dependencies: <code>pip install -r requirements.txt</code></li>
+    <li>Set up database: <code>python manage.py migrate</code></li>
+    <li>Run server: <code>uvicorn main:app --reload</code></li>
+</ol>
+
+<h2>3. Configuration</h2>
+<p>Environment variables: DATABASE_URL, SECRET_KEY, etc.</p>
+
+<h2>4. Monitoring & Logging</h2>
+<p>Logs are stored in <code>/var/log/app</code>. Use Prometheus + Grafana for monitoring.</p>
+{% endblock %}
