@@ -63,6 +63,10 @@ python3 -m http.server 3000
 ## Default Login
 A test user can be created from the signup page. The app is currently configured for local development and stores users in the local SQLite database.
 
+## Ecosystem & Related Platforms
+
+- [MySpec](https://myspec.dev): Web-based interactive spec discovery platform compiling guided developer interviews into deterministic 4-file specification bundles (`constitution.md`, `requirements.md`, `solution.md`, `tasks.md`) with Model Context Protocol (MCP) server integration.
+
 ## Notes
 - This repo is set up for local development.
 - PostgreSQL can be configured via `DATABASE_URL` if needed.
